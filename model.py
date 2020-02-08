@@ -5,7 +5,7 @@ from tensorflow.contrib.rnn import LSTMCell
 
 
 class BiLSTM_CRF(object):
-    # 初始化类中需要的变量
+    # 初始化类中需要的变量(到时候考虑config)
     def __init__(self, embeddings, update_embedding, hidden_dim, num_tags, clip_grad, log_path):
         self.embeddings = embeddings
         self.update_embedding = update_embedding
@@ -24,20 +24,21 @@ class BiLSTM_CRF(object):
         # 设置损失
         self.loss_op()
         self.trainstep_op()
-        self.init_op()
+        # self.init_op()
 
     def add_placeholders(self):
-        self.word_ids = tf.placeholder(tf.int32, shape=[None, None], name="word_ids")
-        self.labels = tf.placeholder(tf.int32, shape=[None, None], name="labels")
-        self.sequence_lengths = tf.placeholder(tf.int32, shape=[None], name="sequence_lengths")
-        self.dropout_pl = tf.placeholder(tf.float32, shape=[], name="dropout_pl")
-        self.lr_pl = tf.placeholder(tf.float32, shape=[], name="lr")
+        with tf.variable_scope("placeholder"):
+            self.word_ids = tf.placeholder(tf.int32, shape=[None, None], name="word_ids")
+            self.labels = tf.placeholder(tf.int32, shape=[None, None], name="labels")
+            self.sequence_lengths = tf.placeholder(tf.int32, shape=[None], name="sequence_lengths")
+            self.dropout_pl = tf.placeholder(tf.float32, shape=[], name="dropout_pl")
+            self.lr_pl = tf.placeholder(tf.float32, shape=[], name="lr")
 
     def lookup_layer_op(self):
-        with tf.variable_scope("words"):
+        with tf.variable_scope("embedding"):
             _word_embeddings = tf.Variable(self.embeddings, dtype=tf.float32, trainable=self.update_embedding, name="_word_embeddings")
             word_embeddings = tf.nn.embedding_lookup(params=_word_embeddings, ids=self.word_ids, name="word_embeddings")
-        self.word_embeddings = tf.nn.dropout(word_embeddings, self.dropout_pl)
+            self.word_embeddings = tf.nn.dropout(word_embeddings, self.dropout_pl)
 
     def biLSTM_layer_op(self):
         with tf.variable_scope("Bi-LSTM"):
@@ -51,7 +52,6 @@ class BiLSTM_CRF(object):
             output = tf.concat([output_fw_seq, output_bw_seq], axis=-1)
             output = tf.nn.dropout(output, self.dropout_pl)
 
-        with tf.variable_scope("params"):
             W = tf.get_variable(name="Weight",
                                 shape=[2 * self.hidden_dim, self.num_tags],
                                 initializer=tf.contrib.layers.xavier_initializer(),
@@ -67,13 +67,14 @@ class BiLSTM_CRF(object):
             self.logits = tf.reshape(pred, [-1, s[1], self.num_tags])
 
     def loss_op(self):
-        log_likelihood, self.transition_params = crf_log_likelihood(inputs=self.logits,
-                                                                    tag_indices=self.labels,
-                                                                    sequence_lengths=self.sequence_lengths)
-        self.loss = -tf.reduce_mean(log_likelihood)
+        with tf.variable_scope("CRF_loss"):
+            log_likelihood, self.transition_params = crf_log_likelihood(inputs=self.logits,
+                                                                        tag_indices=self.labels,
+                                                                        sequence_lengths=self.sequence_lengths)
+            self.loss = -tf.reduce_mean(log_likelihood)
 
     def trainstep_op(self):
-        with tf.variable_scope("train_step"):
+        with tf.variable_scope("train"):
             self.global_step = tf.Variable(0, name="global_step", trainable=False)
             optim = tf.train.GradientDescentOptimizer(learning_rate=self.lr_pl)
 
