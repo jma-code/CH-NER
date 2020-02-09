@@ -3,7 +3,6 @@ import logging
 
 class Config(object):
     log_path = ''
-    file_path = ''
 
     def __init__(self, class_name):
         self.class_name = class_name
@@ -22,9 +21,10 @@ class ConfigProcess(Config):
     #维度
     embedding_dim = 1
 
-    def _init_(self, class_name):
+    def _init_(self, class_name,file_path):
         # 类名
         self.class_name = class_name
+        self.file_path = file_path
 
     def load_config(self):
         config = configparser.ConfigParser()
@@ -59,9 +59,10 @@ class ConfigTrain(Config):
     # 维度
     embedding_dim = 1
 
-    def _init_(self, class_name):
+    def _init_(self, class_name,file_path):
         # 类名
         self.class_name = class_name
+        self.file_path = file_path
 
     # 从配置文件中读取参数
     def load_config(self):
@@ -90,9 +91,10 @@ class ConfigPredict(Config):
     # 维度
     embedding_dim = 1
 
-    def _init_(self, class_name):
+    def _init_(self, class_name,file_path):
         # 类名
         self.class_name = class_name
+        self.file_path = file_path
 
     # 从配置文件中读取参数
     def load_config(self):
