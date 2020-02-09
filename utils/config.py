@@ -4,8 +4,9 @@ import logging
 class Config(object):
     log_path = ''
 
-    def __init__(self, class_name):
+    def __init__(self, class_name, file_path):
         self.class_name = class_name
+        self.file_path = file_path
 
     def load_config(self):
         pass
@@ -21,7 +22,7 @@ class ConfigProcess(Config):
     #维度
     embedding_dim = 1
 
-    def _init_(self, class_name,file_path):
+    def _init_(self, class_name, file_path):
         # 类名
         self.class_name = class_name
         self.file_path = file_path
@@ -58,8 +59,12 @@ class ConfigTrain(Config):
     dropout = 1
     # 维度
     embedding_dim = 1
+    #是否更新
+    update_embedding = True
+    #隐藏层维度
+    hidden_dim = 1
 
-    def _init_(self, class_name,file_path):
+    def _init_(self, class_name, file_path):
         # 类名
         self.class_name = class_name
         self.file_path = file_path
@@ -79,6 +84,8 @@ class ConfigTrain(Config):
         self.optimizer = config.get(self.class_name, 'optimizer')
         self.dropout = config.get(self.class_name, 'dropout')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
+        self.update_embedding = config.get(self.class_name, 'update_embedding')
+        self.hidden_dim = config.get(self.class_name, 'hidden_dim')
 
 #预测
 class ConfigPredict(Config):
@@ -91,7 +98,7 @@ class ConfigPredict(Config):
     # 维度
     embedding_dim = 1
 
-    def _init_(self, class_name,file_path):
+    def _init_(self, class_name, file_path):
         # 类名
         self.class_name = class_name
         self.file_path = file_path
