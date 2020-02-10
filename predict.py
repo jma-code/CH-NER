@@ -6,48 +6,32 @@ from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
-import data
-#import model
-import utils
-import eval
+from utils import train_utils
+import data_process
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
 
-
-def predict_total(sess, sent, batch_size, vocab, tag2label, shuffle):
-    batch_yield(sent, batch_size, vocab, tag2label, shuffle)
-    get_tag = demo_one(sess, sent, batch_size, vocab, tag2label, shuffle)
-
-def batch_yield(sent, batch_size, vocab, tag2label, shuffle):
+def predict_one_batch(sess, seqs):
     """
 
-    :param data:
-    :param batch_size:
-    :param vocab:
-    :param tag2label:
-    :param shuffle:
-    :return:
+    :param sess:
+    :param seqs:
+    :return: label_list
+                 seq_len_list
     """
-    if shuffle:
-        random.shuffle(sent)
+    feed_dict, seq_len_list = train_utils.get_feed_dict(seqs, drop_keep=1.0)
 
-    seqs, labels = [], []
-    for (sent_, tag_) in sent:
-        sent_ = data.sentence2id(sent_, vocab)
-        label_ = [tag2label[tag] for tag in tag_]
-
-        if len(seqs) == batch_size:
-            yield seqs, labels
-            seqs, labels = [], []
-
-        seqs.append(sent_)
-        labels.append(label_)
-
-    if len(seqs) != 0:
-        yield seqs, labels
-
+    # transition_params代表转移概率，由crf_log_likelihood方法计算出
+    logits, transition_params = sess.run([BiLSTM_CRF.logits, BiLSTM_CRF.transition_params],
+                                         feed_dict=feed_dict)
+    label_list = []
+    # 默认使用CRF
+    for logit, seq_len in zip(logits, seq_len_list):
+        viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
+        label_list.append(viterbi_seq)
+    return label_list, seq_len_list
 
 
 def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
@@ -60,8 +44,8 @@ def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
 
     # batch_yield就是把输入的句子每个字的id返回，以及每个标签转化为对应的tag2label的值
     label_list = []
-    for seqs, labels in batch_yield(sent, batch_size, vocab, tag2label, shuffle):
-        label_list_, _ = BiLSTM_CRF.predict_one_batch(sess, seqs)
+    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag2label, shuffle):
+        label_list_, _ = predict_one_batch(sess, seqs)
         label_list.extend(label_list_)
     label2tag = {}
     for tag, label in tag2label.items():
@@ -76,14 +60,16 @@ tag2label = {"O": 0,
              "B-ORG": 5, "I-ORG": 6
              }
 
-
 #在会话中启动图
-#sess = tf.Session()
+model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path, args.optimizer)
+model.build_graph()
+
+
 
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
 get_sent = [(input_sent, ['O'] * len(input_sent))]
-get_vocab = data.read_dictionary("data_path/word2id.pkl")
+get_vocab = data_process.read_dictionary("data/word2id")
 with tf.Session(config=config) as sess:
-    predict_total(sess, get_sent, 60, get_vocab, tag2label, False)
+    demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
 
 
