@@ -19,6 +19,9 @@ embedding_mat = np.float32(embedding_mat)
 embeddings = embedding_mat
 num_tags = len(data_process.tag2label)
 summary_path = "logs"
+'''
+预测引擎
+'''
 
 def predict_one_batch(sess, seqs):
     """
@@ -88,7 +91,9 @@ def get_PER_entity(tag_seq, char_seq):
                 del per
             continue
     return PER
-
+'''
+数据后处理
+'''
 #输出LOC对应的字符
 def get_LOC_entity(tag_seq, char_seq):
     length = len(char_seq)
