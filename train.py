@@ -145,10 +145,10 @@ def dev_one_epoch(sess, dev):
         seq_len_list.extend(seq_len_list_)
     return label_list, seq_len_list
 
-def test(data):
+def test(data, file):
     testSaver = tf.train.Saver()
     with tf.Session(config=config) as sess:
-        testSaver.restore(sess, data)
+        testSaver.restore(sess, file)
         label_list, seq_len_list = dev_one_epoch(sess, data)
         evaluate(label_list, seq_len_list, data)
 
@@ -163,5 +163,5 @@ if args.mode == 'train':
 
 if args.mode == 'test':
     ckpt_file = tf.train.latest_checkpoint(model_path)
-    test(test_data)
+    test(test_data, ckpt_file)
 
