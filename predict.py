@@ -11,6 +11,10 @@ import data
 import utils
 import eval
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+
 
 def predict_total(sess, sent, batch_size, vocab, tag2label, shuffle):
     batch_yield(sent, batch_size, vocab, tag2label, shuffle)
@@ -79,6 +83,7 @@ tag2label = {"O": 0,
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
 get_sent = [(input_sent, ['O'] * len(input_sent))]
 get_vocab = data.read_dictionary("data_path/word2id.pkl")
-predict_total(sess, get_sent, 60, get_vocab, tag2label, False)
+with tf.Session(config=config) as sess:
+    predict_total(sess, get_sent, 60, get_vocab, tag2label, False)
 
 
