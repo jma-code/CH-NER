@@ -72,7 +72,7 @@ class ConfigTrain(Config):
     # 从配置文件中读取参数
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path)
+        config.read(self.file_path, encoding='UTF-8')   # 修改encoding='UTF-8',ljx02
         self.store_path = config.get(self.class_name, 'store_path')
         self.trainData_path = config.get(self.class_name, 'trainData_path')
         self.testData_path = config.get(self.class_name, 'testData_path')

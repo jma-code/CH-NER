@@ -146,6 +146,6 @@ tag2label = {"O": 0,
              "B-LOC": 3, "I-LOC": 4,
              "B-ORG": 5, "I-ORG": 6
              }
-get_sent = ['当', '希', '望', '工', '程']
-get_embedding_mat,  get_sentence_id = total("data/train_data", "data/word2id", 0, get_sent, 300)
-print(get_embedding_mat, '\n', get_sentence_id)
+# get_sent = ['当', '希', '望', '工', '程']
+# get_embedding_mat,  get_sentence_id = total("data/train_data", "data/word2id", 0, get_sent, 300)
+# print(get_embedding_mat, '\n', get_sentence_id)
