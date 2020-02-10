@@ -29,7 +29,7 @@ class ConfigProcess(Config):
 
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path)
+        config.read(self.file_path, encoding='UTF-8')
         self.trainData_path = config.get(self.class_name, 'trainData_path')
         self.testData_path = config.get(self.class_name, 'testData_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
@@ -117,7 +117,7 @@ class ConfigPredict(Config):
     # 从配置文件中读取参数
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path)
+        config.read(self.file_path, encoding='UTF-8')
         self.model_path = config.get(self.class_name, 'model_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.demo_model = config.get(self.class_name, 'demo_model')
