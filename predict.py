@@ -59,13 +59,91 @@ def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     tag = [label2tag[label] for label in label_list[0]]
     return tag
 
-model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
-model.build_graph()
-input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
-get_sent = [(input_sent, ['O'] * len(input_sent))]
-get_vocab = data_process.read_dictionary("data/word2id")
-#在会话中启动图
-with tf.Session(config=config) as sess:
-    demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
+#根据输入的tag返回对应的字符
+def get_entity(tag_seq, char_seq):
+    PER = get_PER_entity(tag_seq, char_seq)
+    LOC = get_LOC_entity(tag_seq, char_seq)
+    ORG = get_ORG_entity(tag_seq, char_seq)
+    return PER, LOC, ORG
+
+#输出PER对应的字符
+def get_PER_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    PER = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-PER':
+            if 'per' in locals().keys():
+                PER.append(per)
+                del per
+            per = char
+            if i+1 == length:
+                PER.append(per)
+        if tag == 'I-PER':
+            per += char
+            if i+1 == length:
+                PER.append(per)
+        if tag not in ['I-PER', 'B-PER']:
+            if 'per' in locals().keys():
+                PER.append(per)
+                del per
+            continue
+    return PER
+
+#输出LOC对应的字符
+def get_LOC_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    LOC = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-LOC':
+            if 'loc' in locals().keys():
+                LOC.append(loc)
+                del loc
+            loc = char
+            if i+1 == length:
+                LOC.append(loc)
+        if tag == 'I-LOC':
+            loc += char
+            if i+1 == length:
+                LOC.append(loc)
+        if tag not in ['I-LOC', 'B-LOC']:
+            if 'loc' in locals().keys():
+                LOC.append(loc)
+                del loc
+            continue
+    return LOC
+
+#输出ORG对应的字符
+def get_ORG_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    ORG = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-ORG':
+            if 'org' in locals().keys():
+                ORG.append(org)
+                del org
+            org = char
+            if i+1 == length:
+                ORG.append(org)
+        if tag == 'I-ORG':
+            org += char
+            if i+1 == length:
+                ORG.append(org)
+        if tag not in ['I-ORG', 'B-ORG']:
+            if 'org' in locals().keys():
+                ORG.append(org)
+                del org
+            continue
+    return ORG
+
+if __name__ == '__main__':
+    model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
+    model.build_graph()
+    input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
+    get_sent = [(input_sent, ['O'] * len(input_sent))]
+    get_vocab = data_process.read_dictionary("data/word2id")
+    #在会话中启动图
+    with tf.Session(config=config) as sess:
+        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
+
 
 
