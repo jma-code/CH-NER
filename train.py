@@ -84,7 +84,7 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
         _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step], feed_dict=feed_dict)
         if step + 1 == 1 or (step + 1) % 20 == 0 or step + 1 ==num_batches:
             print('logger info')
-            print("{} epoch {}, step {}, loss:{:.4}, total_step:{}".format(start_time, epoch + 1, step + 1, loss_train, step_num))
+            # print("{} epoch {}, step {}, loss:{:.4}, total_step:{}".format(start_time, epoch + 1, step + 1, loss_train, step_num))
 
         # 写入日志文件
         # logging.info()
@@ -131,9 +131,9 @@ def dev_one_epoch(sess, dev):
     """
     label_list, seq_len_list = [], []
     # 获取一个批次的句子中词的id以及标签
-    for seqs, labels in data.batch_yield(dev, self.batch_size, self.vocab, tag2label, shuffle=False):
+    for seqs, labels in train_utils.batch_yield(dev, args.batch_size, word2id, tag2label, shuffle=False):
         feed_dict, seq_len_list_ = train_utils.get_feed_dict(seqs, drop_keep=1.0)
-        logits, transition_params = sess.run([self.logits, self.transition_params],
+        logits, transition_params = sess.run([model.logits, model.transition_params],
                                              feed_dict=feed_dict)
         label_list_ = []
         for logit, seq_len in zip(logits, seq_len_list):
@@ -152,7 +152,7 @@ def test(data, file):
         label_list, seq_len_list = dev_one_epoch(sess, data)
         evaluate(label_list, seq_len_list, data)
 
-if args.mode == 'train':
+def train(train_data, test_data):
     # model.train
     saver = tf.train.Saver(tf.global_variables())
     with tf.Session(config=config) as sess:
@@ -160,6 +160,9 @@ if args.mode == 'train':
         model.add_summary(sess)
         for epoch in range(args.epoch):
             run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
+
+if args.mode == 'train':
+    train(train_data, test_data)
 
 if args.mode == 'test':
     ckpt_file = tf.train.latest_checkpoint(model_path)
