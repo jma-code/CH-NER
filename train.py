@@ -9,6 +9,7 @@ import utils.config as cf
 from model import BiLSTM_CRF
 from data_process import sentence2id, read_dictionary, read_corpus,tag2label
 from utils import train_utils
+from tensorflow.contrib.crf import viterbi_decode
 
 params = cf.ConfigTrain('train', 'config/params.conf')
 params.load_config()
@@ -49,6 +50,8 @@ num_tags = len(tag2label)
 word2id = read_dictionary("data/word2id")
 summary_path = "logs"
 model_path = "checkpoints"
+result_path = ''
+
 train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
 
@@ -91,6 +94,64 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
 
     label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
 
+def evaluate(label_list, seq_len_list, data, epoch=None):
+    """
+
+    :param label_list:
+    :param seq_len_list:
+    :param data:
+    :param epoch:
+    :return:
+    """
+    label2tag = {}
+    for tag, label in tag2label.items():
+        label2tag[label] = tag if label != 0 else label
+
+    model_predict = []
+    for label_, (sent, tag) in zip(label_list, data):
+        tag_ = [label2tag[label__] for label__ in label_]
+        sent_res = []
+        if  len(label_) != len(sent):
+            print(sent)
+            print(len(label_))
+            print(tag)
+        for i in range(len(sent)):
+            sent_res.append([sent[i], tag[i], tag_[i]])
+        model_predict.append(sent_res)
+    epoch_num = str(epoch+1) if epoch != None else 'test'
+    label_path = os.path.join(result_path, 'label_' + epoch_num)
+    metric_path = os.path.join(result_path, 'result_metric_' + epoch_num)
+
+def dev_one_epoch(sess, dev):
+    """
+
+    :param sess:
+    :param dev:
+    :return:
+    """
+    label_list, seq_len_list = [], []
+    # 获取一个批次的句子中词的id以及标签
+    for seqs, labels in data.batch_yield(dev, self.batch_size, self.vocab, tag2label, shuffle=False):
+        feed_dict, seq_len_list_ = train_utils.get_feed_dict(seqs, drop_keep=1.0)
+        logits, transition_params = sess.run([self.logits, self.transition_params],
+                                             feed_dict=feed_dict)
+        label_list_ = []
+        for logit, seq_len in zip(logits, seq_len_list):
+            viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
+            label_list_.append(viterbi_seq)
+
+
+        label_list.extend(label_list_)
+        seq_len_list.extend(seq_len_list_)
+    return label_list, seq_len_list
+
+def test(data):
+    testSaver = tf.train.Saver()
+    with tf.Session(config=config) as sess:
+        testSaver.restore(sess, data)
+        label_list, seq_len_list = dev_one_epoch(sess, data)
+        evaluate(label_list, seq_len_list, data)
+
 if args.mode == 'train':
     # model.train
     saver = tf.train.Saver(tf.global_variables())
@@ -99,4 +160,8 @@ if args.mode == 'train':
         model.add_summary(sess)
         for epoch in range(args.epoch):
             run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
+
+if args.mode == 'test':
+    ckpt_file = tf.train.latest_checkpoint(model_path)
+    test(test_data)
 
