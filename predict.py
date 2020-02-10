@@ -4,24 +4,21 @@ from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
 from utils import train_utils
+from data_process import tag2label
 import utils.config as cf
 import data_process
 
 # 参数部分
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+params = cf.ConfigPredict('predict', 'config/params.conf')
+params.load_config()
 embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
 embedding_mat = np.float32(embedding_mat)
 embeddings = embedding_mat
 num_tags = len(data_process.tag2label)
 summary_path = "logs"
-model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
-model.build_graph()
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction = 0.3
-
-params = cf.ConfigPredict('predict', 'config/params.conf')
-params.load_config()
 
 def predict_one_batch(sess, seqs):
     """
@@ -43,8 +40,7 @@ def predict_one_batch(sess, seqs):
         label_list.append(viterbi_seq)
     return label_list, seq_len_list
 
-
-def demo_one(sess, sent, batch_size, vocab, data_process.tag2label, shuffle):
+def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     """
 
     :param sess:
@@ -63,14 +59,12 @@ def demo_one(sess, sent, batch_size, vocab, data_process.tag2label, shuffle):
     tag = [label2tag[label] for label in label_list[0]]
     return tag
 
-
-#在会话中启动图
-
-
-
+model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
+model.build_graph()
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
 get_sent = [(input_sent, ['O'] * len(input_sent))]
 get_vocab = data_process.read_dictionary("data/word2id")
+#在会话中启动图
 with tf.Session(config=config) as sess:
     demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
 
