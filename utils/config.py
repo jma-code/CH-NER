@@ -108,6 +108,8 @@ class ConfigPredict(Config):
     clip = 0
     # tensorBoard存储路径
     summary_path = ''
+    # 优化器
+    optimizer = ''
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -126,6 +128,7 @@ class ConfigPredict(Config):
         self.hidden_dim = config.get(self.class_name, 'hidden_dim')
         self.clip = config.get(self.class_name, 'clip')
         self.summary_path = config.get(self.class_name, 'summary_path')
+        self.optimizer = config.get(self.class_name, 'optimizer')
 
 def get_logger(filename):
     logger = logging.getLogger('logger')
