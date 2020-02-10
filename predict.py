@@ -1,15 +1,20 @@
 import numpy as np
-import os, time, sys, random
 import tensorflow as tf
-from tensorflow.contrib.rnn import LSTMCell
-from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
 from utils import train_utils
 import utils.config as cf
 import data_process
-import model
+
+# 参数部分
+embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
+embedding_mat = np.float32(embedding_mat)
+embeddings = embedding_mat
+num_tags = len(data_process.tag2label)
+summary_path = "logs"
+model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
+model.build_graph()
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -29,7 +34,7 @@ def predict_one_batch(sess, seqs):
     feed_dict, seq_len_list = train_utils.get_feed_dict(seqs, drop_keep=1.0)
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
-    logits, transition_params = sess.run([BiLSTM_CRF.logits, BiLSTM_CRF.transition_params],
+    logits, transition_params = sess.run([model.logits, model.transition_params],
                                          feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
@@ -39,7 +44,7 @@ def predict_one_batch(sess, seqs):
     return label_list, seq_len_list
 
 
-def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
+def demo_one(sess, sent, batch_size, vocab, data_process.tag2label, shuffle):
     """
 
     :param sess:
@@ -58,22 +63,9 @@ def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     tag = [label2tag[label] for label in label_list[0]]
     return tag
 
-## tags, BIO
-tag2label = {"O": 0,
-             "B-PER": 1, "I-PER": 2,
-             "B-LOC": 3, "I-LOC": 4,
-             "B-ORG": 5, "I-ORG": 6
-             }
 
 #在会话中启动图
-# 参数部分
-embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
-embedding_mat = np.float32(embedding_mat)
-embeddings = embedding_mat
-num_tags = len(tag2label)
-summary_path = "logs"
-model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
-model.build_graph()
+
 
 
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
