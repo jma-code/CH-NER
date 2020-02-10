@@ -7,11 +7,16 @@ from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
 from utils import train_utils
+import utils.config as cf
 import data_process
+import model
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
+
+params = cf.ConfigPredict('predict', 'config/params.conf')
+params.load_config()
 
 def predict_one_batch(sess, seqs):
     """
@@ -61,9 +66,14 @@ tag2label = {"O": 0,
              }
 
 #在会话中启动图
-model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path, args.optimizer)
+# 参数部分
+embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
+embedding_mat = np.float32(embedding_mat)
+embeddings = embedding_mat
+num_tags = len(tag2label)
+summary_path = "logs"
+model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
 model.build_graph()
-
 
 
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
