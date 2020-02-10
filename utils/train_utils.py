@@ -49,7 +49,7 @@ def pad_sequence(sequences, pad_mark=0):
     return seq_list, seq_len_list  # 保留填充后向量和填充前向量
 
 
-def get_feed_dict(seqs, labels, lr, drop_keep):
+def get_feed_dict(seqs, labels=None, lr=None, drop_keep=None):
     word_ids, seq_len_list = pad_sequence(seqs, pad_mark=0)
     # feed_dict
     feed_dict = {"word_ids": word_ids, "sequence_lengths": seq_len_list}
