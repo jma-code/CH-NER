@@ -91,12 +91,12 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
 
     label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
 
-
-# model.train
-saver = tf.train.Saver(tf.global_variables())
-with tf.Session(config=config) as sess:
-    tf.global_variables_initializer()  # 初始化模型参数
-    model.add_summary(sess)
-    for epoch in range(args.epoch):
-        run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
+if args.mode == 'train':
+    # model.train
+    saver = tf.train.Saver(tf.global_variables())
+    with tf.Session(config=config) as sess:
+        tf.global_variables_initializer()  # 初始化模型参数
+        model.add_summary(sess)
+        for epoch in range(args.epoch):
+            run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
 
