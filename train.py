@@ -185,6 +185,7 @@ def run(operation):
     :return:
     """
     if operation == 'train':
+        tf.reset_default_graph()
         train(train_data, test_data)
 
     if operation == 'test':
