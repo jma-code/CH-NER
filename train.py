@@ -189,5 +189,6 @@ def run(operation):
         test(test_data, ckpt_file)
 
 
+
 if __name__ == '__main__':
     run(args.mode)
