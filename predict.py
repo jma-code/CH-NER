@@ -83,7 +83,6 @@ def get_entity(tag_seq, char_seq):
 def get_PER_entity(tag_seq, char_seq):
     length = len(char_seq)
     PER = []
-    per = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-PER':
             if 'per' in locals().keys():
@@ -113,7 +112,6 @@ def get_PER_entity(tag_seq, char_seq):
 def get_LOC_entity(tag_seq, char_seq):
     length = len(char_seq)
     LOC = []
-    loc = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-LOC':
             if 'loc' in locals().keys():
@@ -138,7 +136,6 @@ def get_LOC_entity(tag_seq, char_seq):
 def get_ORG_entity(tag_seq, char_seq):
     length = len(char_seq)
     ORG = []
-    org = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-ORG':
             if 'org' in locals().keys():
