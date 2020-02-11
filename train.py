@@ -4,12 +4,12 @@ import time
 import tensorflow as tf
 import argparse
 import os
-import numpy as np
 import utils.config as cf
 from model import BiLSTM_CRF
-from data_process import sentence2id, read_dictionary, read_corpus,tag2label
+from data_process import random_embedding, read_dictionary, read_corpus,tag2label
 from utils import train_utils
 from tensorflow.contrib.crf import viterbi_decode
+from utils.eval import conlleval
 
 params = cf.ConfigTrain('train', 'config/params.conf')
 params.load_config()
@@ -36,42 +36,38 @@ parser.add_argument('--update_embedding', type=train_utils.str2bool, default=par
 parser.add_argument('--pretrain_embedding', type=str, default='random', help='use pretrained char embedding or init it randomly')
 parser.add_argument('--embedding_dim', type=int, default=params.embedding_dim, help='random init char embedding_dim')
 parser.add_argument('--shuffle', type=train_utils.str2bool, default=params.shuffle, help='shuffle training data before each epoch')
-parser.add_argument('--mode', type=str, default='demo', help='train/test/demo')
+parser.add_argument('--mode', type=str, default='train', help='train/test/demo')
 parser.add_argument('--demo_model', type=str, default='1521112368', help='model for test and demo')
 args = parser.parse_args()
 
 
 # 参数部分
-embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
-embedding_mat = np.float32(embedding_mat)
-embeddings = embedding_mat
-
 num_tags = len(tag2label)
 word2id = read_dictionary("data/word2id")
 summary_path = "logs"
 model_path = "checkpoints"
 result_path = ''
-
+embeddings = random_embedding(word2id, 300)
 train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
+logger = cf.get_logger('logs/1.txt')
 
 # 模型加载
 model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path, args.optimizer)
 model.build_graph()
 
 
-def dev_one_epoch(sess, dev):
+def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
     """
-
-    :param sess:
-    :param dev:
+    训练模型，训练一个批次
+    :param sess: 训练模型的一次会话
+    :param train: 训练数据
+    :param dev: 用来验证的数据
+    :param tag2label: 标注转换为label的字典
+    :param epoch: 批次的计数
+    :param saver: 保存训练参数
     :return:
     """
-    # 需要predict方法
-    pass
-
-
-def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
     num_batches = (len(train) + args.batch_size -1) // args.batch_size
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     batches = train_utils.batch_yield(train, args.batch_size, word2id, tag2label)
@@ -80,19 +76,21 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
         sys.stdout.write(' processing: {} batch / {} batches.'.format(step + 1, num_batches) + '\r')
         step_num = epoch * num_batches + step +1
 
-        feed_dict, _ = train_utils.get_feed_dict(seqs, labels, args.lr, args.dropout)
-        _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step], feed_dict=feed_dict)
-        if step + 1 == 1 or (step + 1) % 20 == 0 or step + 1 ==num_batches:
+        feed_dict, _ = train_utils.get_feed_dict(model, seqs, labels, args.lr, args.dropout)
+        _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step],
+                                                     feed_dict=feed_dict)
+        if step + 1 == 1 or (step + 1) % 20 == 0 or step + 1 == num_batches:
             print('logger info')
-            # print("{} epoch {}, step {}, loss:{:.4}, total_step:{}".format(start_time, epoch + 1, step + 1, loss_train, step_num))
-
-        # 写入日志文件
-        # logging.info()
+            logger.info('{} epoch {}, step {}, loss: {:.4}, total_step: {}'.format(start_time, epoch + 1, step + 1,
+                                                                                   loss_train, step_num))
 
         if step + 1 == num_batches:
             saver.sace(sess, model_path, global_step=step_num)
 
+    logger.info('=============test==============')
     label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
+    evaluate(label_list_dev, seq_len_list_dev, dev, epoch)
+
 
 def evaluate(label_list, seq_len_list, data, epoch=None):
     """
@@ -118,15 +116,18 @@ def evaluate(label_list, seq_len_list, data, epoch=None):
         for i in range(len(sent)):
             sent_res.append([sent[i], tag[i], tag_[i]])
         model_predict.append(sent_res)
-    epoch_num = str(epoch+1) if epoch != None else 'test'
+    epoch_num = str(epoch+1) if epoch is not None else 'test'
     label_path = os.path.join(result_path, 'label_' + epoch_num)
     metric_path = os.path.join(result_path, 'result_metric_' + epoch_num)
+    for _ in conlleval(model_predict, label_path, metric_path):
+        logger.info(_)
+
 
 def dev_one_epoch(sess, dev):
     """
 
-    :param sess:
-    :param dev:
+    :param sess: 训练的一次会话
+    :param dev: 验证数据
     :return:
     """
     label_list, seq_len_list = [], []
@@ -140,10 +141,10 @@ def dev_one_epoch(sess, dev):
             viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
             label_list_.append(viterbi_seq)
 
-
         label_list.extend(label_list_)
         seq_len_list.extend(seq_len_list_)
     return label_list, seq_len_list
+
 
 def test(data, file):
     testSaver = tf.train.Saver()
@@ -152,7 +153,14 @@ def test(data, file):
         label_list, seq_len_list = dev_one_epoch(sess, data)
         evaluate(label_list, seq_len_list, data)
 
+
 def train(train_data, test_data):
+    """
+    进行模型训练
+    :param train_data: 训练数据
+    :param test_data: 测试数据
+    :return: 
+    """
     # model.train
     saver = tf.train.Saver(tf.global_variables())
     with tf.Session(config=config) as sess:
@@ -161,10 +169,10 @@ def train(train_data, test_data):
         for epoch in range(args.epoch):
             run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
 
+
 if args.mode == 'train':
     train(train_data, test_data)
 
 if args.mode == 'test':
     ckpt_file = tf.train.latest_checkpoint(model_path)
     test(test_data, ckpt_file)
-

@@ -15,6 +15,15 @@ def str2bool(v):
 
 
 def batch_yield(data, batch_size, vocab, tag2label, shuffle=False):
+    """
+    将输入的数据转换为模型可以训练的输入数据
+    :param data: 输入数据
+    :param batch_size: 一次处理的数据
+    :param vocab: 词典，word2id
+    :param tag2label: 标注转换为label
+    :param shuffle: 是否随机采样
+    :return:
+    """
     if shuffle:
         random.shuffle(data)
 
@@ -34,9 +43,9 @@ def batch_yield(data, batch_size, vocab, tag2label, shuffle=False):
 
 def pad_sequence(sequences, pad_mark=0):
     """
-
-    :param sequences:
-    :param pad_mark:
+    对输入序列进行填充，使用pad_mark进行填充
+    :param sequences: 输入的序列
+    :param pad_mark: 填充的字符
     :return:
     """
     max_len = max(map(lambda x: len(x), sequences))
@@ -49,16 +58,26 @@ def pad_sequence(sequences, pad_mark=0):
     return seq_list, seq_len_list  # 保留填充后向量和填充前向量
 
 
-def get_feed_dict(seqs, labels=None, lr=None, drop_keep=None):
+def get_feed_dict(model, seqs, labels=None, lr=None, drop_keep=None):
+    """
+    将batch_yield的数据进行填充和模型训练参数一起传入模型
+    :param model: (传入正在训练的模型)
+    :param seqs: batch_yield后的序列
+    :param labels: 携带的标签
+    :param lr: 学习率
+    :param drop_keep: 训练中参数随机放弃的百分比
+    :return:
+    """
     word_ids, seq_len_list = pad_sequence(seqs, pad_mark=0)
     # feed_dict
-    feed_dict = {"word_ids": word_ids, "sequence_lengths": seq_len_list}
+    feed_dict = {model.word_ids: word_ids,
+                 model.sequence_lengths: seq_len_list}
     if labels is not None:
         labels_, _ = pad_sequence(labels, pad_mark=0)
-        feed_dict["labels"] = labels_
+        feed_dict[model.labels] = labels_
     if lr is not None:
-        feed_dict["lr_pl"] = lr
+        feed_dict[model.lr_pl] = lr
     if drop_keep is not None:
-        feed_dict["dropout_pl"] = drop_keep
+        feed_dict[model.dropout_pl] = drop_keep
 
     return feed_dict, seq_len_list
