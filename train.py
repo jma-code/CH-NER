@@ -43,10 +43,10 @@ args = parser.parse_args()
 
 # 参数部分
 num_tags = len(tag2label)
-word2id = read_dictionary("data/word2id")
-summary_path = "logs"
-model_path = "checkpoints"
-result_path = ''
+word2id = read_dictionary(params.vocab_path)
+summary_path = params.summary_path
+model_path = params.store_path
+result_path = params.result_path
 embeddings = random_embedding(word2id, 300)
 train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
@@ -147,6 +147,11 @@ def dev_one_epoch(sess, dev):
 
 
 def test(data, file):
+    """
+    模型测试
+    :param data:测试数据
+    :param file:模型
+    """
     testSaver = tf.train.Saver()
     with tf.Session(config=config) as sess:
         testSaver.restore(sess, file)

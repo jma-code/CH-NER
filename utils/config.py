@@ -46,25 +46,29 @@ class ConfigTrain(Config):
     # 是否打乱数据集
     shuffle = True
     # 每次训练句子数
-    batch_size = 20
+    batch_size = 0
     # 迭代次数
-    epoch = 1
+    epoch = 0
     # 学习率
-    lr = 0.0001
+    lr = 1
     # 梯度裁剪
-    clip = 5.0
+    clip = 1
     # 优化器
-    optimizer = 'Adam'
+    optimizer = ''
     # 保留概率
-    dropout = 0.5
+    dropout = 1
     # 维度
-    embedding_dim = 300
+    embedding_dim = 1
     #是否更新
     update_embedding = True
     #隐藏层维度
-    hidden_dim = 300
+    hidden_dim = 1
     #tensorboard存储路径
-    summary_path = 'logs'
+    summary_path = ''
+    #字典路径
+    vocab_path = ''
+    #结果路径
+    result_path = ''
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -89,6 +93,8 @@ class ConfigTrain(Config):
         self.update_embedding = config.get(self.class_name, 'update_embedding')
         self.hidden_dim = config.get(self.class_name, 'hidden_dim')
         self.summary_path = config.get(self.class_name, 'summary_path')
+        self.vocab_path = config.get(self.class_name, 'vocab_path')
+        self.result_path = config.get(self.class_name, 'result_path')
 
 #预测
 class ConfigPredict(Config):

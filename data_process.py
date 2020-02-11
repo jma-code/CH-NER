@@ -1,5 +1,10 @@
-import sys, pickle, os, random
+import pickle, os
 import numpy as np
+'''
+预处理模块总函数。
+输入：训练数据路径、word2id字典保存路径、词频阈值、测试输入句子、向量化维数
+输出：训练数据向量化结果、测试输入句子id
+'''
 def total(corpus_path, vocab_path, min_count, sent, embedding_dim):
     read_corpus(corpus_path)
     vocab_build(vocab_path, corpus_path, min_count)
@@ -8,6 +13,7 @@ def total(corpus_path, vocab_path, min_count, sent, embedding_dim):
     get_sentence_id = sentence2id(sent, get_word2id)
     return get_embedding_mat, get_sentence_id
 
+# 输入train_data文件的路径，读取训练集的语料，输出train_data
 def read_corpus(corpus_path):
     """
 
@@ -39,9 +45,11 @@ def read_corpus(corpus_path):
         ( 第三句话 )  ] 总共有50658句话"""
     return data
 
-"""由train_data来构造一个(统计非重复字)字典{'第一个字':[对应的id,该字出现的次数],'第二个字':[对应的id,该字出现的次数], , ,}
-去除低频词，生成一个word_id的字典并保存在输入的vocab_path的路径下，
-保存的方法是pickle模块自带的dump方法，保存后的文件格式是word2id.pkl文件"""
+'''
+由train_data来构造一个(统计非重复字)字典{'第一个字':[对应的id,该字出现的次数],'第二个字':[对应的id,该字出现的次数], , ,}
+去除低频词，生成一个word_id的字典并保存在输入的vocab_path的路径下，保存的方法是pickle模块自带的dump方法，保存后的文件格式
+是word2id.pkl文件
+'''
 def vocab_build(vocab_path, corpus_path, min_count):
     """
 
@@ -121,7 +129,8 @@ def random_embedding(vocab, embedding_dim):
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(vocab), embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     return embedding_mat
-#输入一句话，生成一个 sentence_id
+
+# 输入一句话，生成一个 sentence_id
 '''sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]'''
 def sentence2id(sent, word2id):
     """
