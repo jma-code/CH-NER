@@ -172,7 +172,7 @@ def train(train_corpus, test_corpus):
     saver = tf.train.Saver(tf.global_variables())
     with tf.Session(config=config) as sess:
         # tf.global_variables_initializer()  # 初始化模型参数
-        sess.run(model.init_op)
+        sess.run(model.inits_op)
         model.add_summary(sess)
         for epoch in range(args.epoch):
             run_one_epoch(sess, train_corpus, test_corpus, tag2label, epoch, saver)
