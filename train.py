@@ -170,9 +170,19 @@ def train(train_data, test_data):
             run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
 
 
-if args.mode == 'train':
-    train(train_data, test_data)
+def run(operation):
+    """
 
-if args.mode == 'test':
-    ckpt_file = tf.train.latest_checkpoint(model_path)
-    test(test_data, ckpt_file)
+    :param operation:
+    :return:
+    """
+    if operation == 'train':
+        train(train_data, test_data)
+
+    if operation == 'test':
+        ckpt_file = tf.train.latest_checkpoint(model_path)
+        test(test_data, ckpt_file)
+
+
+if __name__ == '__main__':
+    run(args.mode)
