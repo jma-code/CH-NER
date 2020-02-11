@@ -1,6 +1,7 @@
 import configparser
 import logging
 
+
 class Config(object):
     log_path = ''
 
@@ -11,15 +12,16 @@ class Config(object):
     def load_config(self):
         pass
 
-#数据处理
+
+# 数据处理
 class ConfigProcess(Config):
-    #训练集路径
+    # 训练集路径
     trainData_path = ''
-    #测试集路径
+    # 测试集路径
     testData_path = ''
-    #字典存储路径
+    # 字典存储路径
     vocab_path = ''
-    #维度
+    # 维度
     embedding_dim = 1
 
     def _init_(self, class_name, file_path):
@@ -35,7 +37,8 @@ class ConfigProcess(Config):
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
 
-#训练
+
+# 训练
 class ConfigTrain(Config):
     # 模型存储路径
     store_path = ''
@@ -59,15 +62,15 @@ class ConfigTrain(Config):
     dropout = 1
     # 维度
     embedding_dim = 1
-    #是否更新
+    # 是否更新
     update_embedding = True
-    #隐藏层维度
+    # 隐藏层维度
     hidden_dim = 1
-    #tensorboard存储路径
+    # tensorboard存储路径
     summary_path = ''
-    #字典路径
+    # 字典路径
     vocab_path = ''
-    #结果路径
+    # 结果路径
     result_path = ''
 
     def _init_(self, class_name, file_path):
@@ -78,7 +81,7 @@ class ConfigTrain(Config):
     # 从配置文件中读取参数
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path, encoding='UTF-8')   # 修改encoding='UTF-8',ljx02
+        config.read(self.file_path, encoding='UTF-8')  # 修改encoding='UTF-8',ljx02
         self.store_path = config.get(self.class_name, 'store_path')
         self.trainData_path = config.get(self.class_name, 'trainData_path')
         self.testData_path = config.get(self.class_name, 'testData_path')
@@ -96,7 +99,8 @@ class ConfigTrain(Config):
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.result_path = config.get(self.class_name, 'result_path')
 
-#预测
+
+# 预测
 class ConfigPredict(Config):
     # 模型路径
     model_path = ''
@@ -135,6 +139,7 @@ class ConfigPredict(Config):
         self.clip = config.get(self.class_name, 'clip')
         self.summary_path = config.get(self.class_name, 'summary_path')
         self.optimizer = config.get(self.class_name, 'optimizer')
+
 
 def get_logger(filename):
     logger = logging.getLogger('logger')
