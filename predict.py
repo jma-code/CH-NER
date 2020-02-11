@@ -40,8 +40,8 @@ def predict_one_batch(ses, seqs):
                                         feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
-    for logit, seq_len in zip(logits, seq_len_list):
-        viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
+    for log_it, seq_len in zip(logits, seq_len_list):
+        viterbi_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
         label_list.append(viterbi_seq)
     return label_list, seq_len_list
 
@@ -65,7 +65,7 @@ def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
         label_list_, _ = predict_one_batch(ses, seqs)
         label_list.extend(label_list_)
     label2tag = {}
-    for tag, label in tag2label.items():
+    for tag, label in tag_label.items():
         label2tag[label] = tag if label != 0 else label
     tag = [label2tag[label] for label in label_list[0]]
     return tag
@@ -167,4 +167,4 @@ if __name__ == '__main__':
     get_sent = [(input_sent, ['O'] * len(input_sent))]
     get_vocab = data_process.read_dictionary("data/word2id")
     with tf.Session(config=config) as sess:
-        demo_one(sess, get_sent, 60, get_vocab, tag_label, False)
+        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
