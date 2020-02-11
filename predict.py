@@ -47,11 +47,15 @@ def predict_one_batch(ses, seqs):
 
 
 # 输入句子，得到预测标签id，并转化为label
-def demo_one(ses, sent, batch_size, vocab, tag2label, shuffle):
+def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
     """
 
     :param ses:
     :param sent:
+    :param batch_size:
+    :param vocab:
+    :param tag_label:
+    :param shuffle:
     :return:
     """
 
@@ -77,9 +81,9 @@ def get_entity(tag_seq, char_seq):
 
 # 输出PER对应的字符
 def get_PER_entity(tag_seq, char_seq):
-    global per
     length = len(char_seq)
     PER = []
+    per = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-PER':
             if 'per' in locals().keys():
@@ -107,9 +111,9 @@ def get_PER_entity(tag_seq, char_seq):
 
 # 输出LOC对应的字符
 def get_LOC_entity(tag_seq, char_seq):
-    global loc
     length = len(char_seq)
     LOC = []
+    loc = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-LOC':
             if 'loc' in locals().keys():
@@ -132,9 +136,9 @@ def get_LOC_entity(tag_seq, char_seq):
 
 # 输出ORG对应的字符
 def get_ORG_entity(tag_seq, char_seq):
-    global org
     length = len(char_seq)
     ORG = []
+    org = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-ORG':
             if 'org' in locals().keys():
@@ -163,4 +167,4 @@ if __name__ == '__main__':
     get_sent = [(input_sent, ['O'] * len(input_sent))]
     get_vocab = data_process.read_dictionary("data/word2id")
     with tf.Session(config=config) as sess:
-        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
+        demo_one(sess, get_sent, 60, get_vocab, tag_label, False)
