@@ -132,7 +132,7 @@ def dev_one_epoch(sess, dev):
     # 获取一个批次的句子中词的id以及标签
     for seqs, labels in train_utils.batch_yield(dev, args.batch_size, word2id, tag2label, shuffle=False):
         feed_dict, seq_len_list_ = train_utils.get_feed_dict(model, seqs, drop_keep=1.0)
-        log_its, transition_params = sess.run([model.logits, model.transition_params],
+        log_its, transition_params = sess.run([model.log_its, model.transition_params],
                                               feed_dict=feed_dict)
         label_list_ = []
         for log_it, seq_len in zip(log_its, seq_len_list):
@@ -150,9 +150,9 @@ def test(data, file):
     :param data:测试数据
     :param file:模型
     """
-    testSaver = tf.train.Saver()
+    testsaver = tf.train.Saver()
     with tf.Session(config=config) as sess:
-        testSaver.restore(sess, file)
+        testsaver.restore(sess, file)
         label_list, seq_len_list = dev_one_epoch(sess, data)
         evaluate(label_list, seq_len_list, data)
 
