@@ -36,13 +36,13 @@ def predict_one_batch(ses, seqs):
     feed_dict, seq_len_list = train_utils.get_feed_dict(model, seqs, drop_keep=1.0)
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
-    logits, transition_params = ses.run([model.log_its, model.transition_params],
-                                        feed_dict=feed_dict)
+    log_its, transition_params = ses.run([model.log_its, model.transition_params],
+                                         feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
-    for logit, seq_len in zip(logits, seq_len_list):
-        viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
-        label_list.append(viterbi_seq)
+    for log_it, seq_len in zip(log_its, seq_len_list):
+        vtb_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
+        label_list.append(vtb_seq)
     return label_list, seq_len_list
 
 
@@ -51,7 +51,7 @@ def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
     """
 
     :param shuffle:
-    :param tag2label:
+    :param tag_label:
     :param vocab:
     :param batch_size:
     :param ses:
@@ -65,7 +65,7 @@ def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
 
     # batch_yield就是把输入的句子每个字的id返回，以及每个标签转化为对应的tag2label的值
     label_list = []
-    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag2label, shuffle):
+    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag_label, shuffle):
         label_list_, _ = predict_one_batch(ses, seqs)
         label_list.extend(label_list_)
     label2tag = {}
@@ -171,4 +171,4 @@ if __name__ == '__main__':
     get_sent = [(input_sent, ['O'] * len(input_sent))]
     get_vocab = data_process.read_dictionary("data/word2id")
     with tf.Session(config=config) as sess:
-        demo_one(sess, get_sent, 60, get_vocab, tag_label, False)
+        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
