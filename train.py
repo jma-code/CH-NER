@@ -165,9 +165,14 @@ def train(train_corpus, test_corpus):
     :return: 
     """
     # model.train
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+                       args.optimizer)
+    model.build_graph()
+
     saver = tf.train.Saver(tf.global_variables())
     with tf.Session(config=config) as sess:
-        tf.global_variables_initializer()  # 初始化模型参数
+        # tf.global_variables_initializer()  # 初始化模型参数
+        sess.run(model.init_op)
         model.add_summary(sess)
         for epoch in range(args.epoch):
             run_one_epoch(sess, train_corpus, test_corpus, tag2label, epoch, saver)

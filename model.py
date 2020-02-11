@@ -49,7 +49,7 @@ class BiLSTM_CRF(object):
         # 设置损失
         self.loss_op()
         self.trainstep_op()
-        # self.init_op()
+        self.inits_op()
 
     def add_placeholders(self):
         with tf.variable_scope("placeholder"):
@@ -121,7 +121,7 @@ class BiLSTM_CRF(object):
             grads_and_vars_clip = [[tf.clip_by_value(g, -self.clip_grad, self.clip_grad), v] for g, v in grads_and_vars]
             self.train_op = optim.apply_gradients(grads_and_vars_clip, global_step=self.global_step)
 
-    def init_op(self):
+    def inits_op(self):
         self.init_op = tf.global_variables_initializer()
 
     def add_summary(self, sess):
