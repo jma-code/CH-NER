@@ -50,6 +50,10 @@ def predict_one_batch(ses, seqs):
 def demo_one(ses, sent, batch_size, vocab, tag2label, shuffle):
     """
 
+    :param shuffle:
+    :param tag2label:
+    :param vocab:
+    :param batch_size:
     :param ses:
     :param sent:
     :return:
@@ -77,7 +81,6 @@ def get_entity(tag_seq, char_seq):
 
 # 输出PER对应的字符
 def get_PER_entity(tag_seq, char_seq):
-    global per
     length = len(char_seq)
     PER = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
