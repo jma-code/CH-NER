@@ -1,4 +1,3 @@
-# train model
 import sys
 import time
 import tensorflow as tf
@@ -6,7 +5,7 @@ import argparse
 import os
 import utils.config as cf
 from model import BiLSTM_CRF
-from data_process import random_embedding, read_dictionary, read_corpus,tag2label
+from data_process import random_embedding, read_dictionary, read_corpus, tag2label
 from utils import train_utils
 from tensorflow.contrib.crf import viterbi_decode
 from utils.eval import conlleval
@@ -21,25 +20,28 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
 
-## hyperparameters
+# hyperparameters
 parser = argparse.ArgumentParser(description='BiLSTM-CRF for Chinese NER task')
 parser.add_argument('--train_data', type=str, default=params.trainData_path, help='train data source')
 parser.add_argument('--test_data', type=str, default=params.testData_path, help='test data source')
 parser.add_argument('--batch_size', type=int, default=params.batch_size, help='#sample of each minibatch')
 parser.add_argument('--epoch', type=int, default=params.epoch, help='#epoch of training')
 parser.add_argument('--hidden_dim', type=int, default=params.hidden_dim, help='#dim of hidden state')
-parser.add_argument('--optimizer', type=str, default=params.optimizer, help='Adam/Adadelta/Adagrad/RMSProp/Momentum/SGD')
+parser.add_argument('--optimizer', type=str, default=params.optimizer,
+                    help='Adam/Adadelta/Adagrad/RMSProp/Momentum/SGD')
 parser.add_argument('--lr', type=float, default=params.lr, help='learning rate')
 parser.add_argument('--clip', type=float, default=params.clip, help='gradient clipping')
 parser.add_argument('--dropout', type=float, default=params.dropout, help='dropout keep_prob')
-parser.add_argument('--update_embedding', type=train_utils.str2bool, default=params.update_embedding, help='update embedding during training')
-parser.add_argument('--pretrain_embedding', type=str, default='random', help='use pretrained char embedding or init it randomly')
+parser.add_argument('--update_embedding', type=train_utils.str2bool, default=params.update_embedding,
+                    help='update embedding during training')
+parser.add_argument('--pretrain_embedding', type=str, default='random',
+                    help='use pretrained char embedding or init it randomly')
 parser.add_argument('--embedding_dim', type=int, default=params.embedding_dim, help='random init char embedding_dim')
-parser.add_argument('--shuffle', type=train_utils.str2bool, default=params.shuffle, help='shuffle training data before each epoch')
+parser.add_argument('--shuffle', type=train_utils.str2bool, default=params.shuffle,
+                    help='shuffle training data before each epoch')
 parser.add_argument('--mode', type=str, default='train', help='train/test/demo')
 parser.add_argument('--demo_model', type=str, default='1521112368', help='model for test and demo')
 args = parser.parse_args()
-
 
 # 参数部分
 num_tags = len(tag2label)
@@ -53,28 +55,29 @@ test_data = read_corpus(args.test_data)
 logger = cf.get_logger('logs/1.txt')
 
 # 模型加载
-model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path, args.optimizer)
+model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+                   args.optimizer)
 model.build_graph()
 
 
-def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
+def run_one_epoch(sess, train_corpus, dev, tag_label, epoch, saver):
     """
     训练模型，训练一个批次
     :param sess: 训练模型的一次会话
-    :param train: 训练数据
+    :param train_corpus: 训练数据
     :param dev: 用来验证的数据
-    :param tag2label: 标注转换为label的字典
+    :param tag_label: 标注转换为label的字典
     :param epoch: 批次的计数
     :param saver: 保存训练参数
     :return:
     """
-    num_batches = (len(train) + args.batch_size -1) // args.batch_size
+    num_batches = (len(train_corpus) + args.batch_size - 1) // args.batch_size
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    batches = train_utils.batch_yield(train, args.batch_size, word2id, tag2label)
+    batches = train_utils.batch_yield(train, args.batch_size, word2id, tag_label)
 
     for step, (seqs, labels) in enumerate(batches):
         sys.stdout.write(' processing: {} batch / {} batches.'.format(step + 1, num_batches) + '\r')
-        step_num = epoch * num_batches + step +1
+        step_num = epoch * num_batches + step + 1
 
         feed_dict, _ = train_utils.get_feed_dict(model, seqs, labels, args.lr, args.dropout)
         _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step],
@@ -89,14 +92,13 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
 
     logger.info('=============test==============')
     label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
-    evaluate(label_list_dev, seq_len_list_dev, dev, epoch)
+    evaluate(label_list_dev, dev, epoch)
 
 
-def evaluate(label_list, seq_len_list, data, epoch=None):
+def evaluate(label_list, data, epoch=None):
     """
 
     :param label_list:
-    :param seq_len_list:
     :param data:
     :param epoch:
     :return:
@@ -109,14 +111,10 @@ def evaluate(label_list, seq_len_list, data, epoch=None):
     for label_, (sent, tag) in zip(label_list, data):
         tag_ = [label2tag[label__] for label__ in label_]
         sent_res = []
-        if  len(label_) != len(sent):
-            print(sent)
-            print(len(label_))
-            print(tag)
         for i in range(len(sent)):
             sent_res.append([sent[i], tag[i], tag_[i]])
         model_predict.append(sent_res)
-    epoch_num = str(epoch+1) if epoch is not None else 'test'
+    epoch_num = str(epoch + 1) if epoch is not None else 'test'
     label_path = os.path.join(result_path, 'label_' + epoch_num)
     metric_path = os.path.join(result_path, 'result_metric_' + epoch_num)
     for _ in conlleval(model_predict, label_path, metric_path):
@@ -133,13 +131,13 @@ def dev_one_epoch(sess, dev):
     label_list, seq_len_list = [], []
     # 获取一个批次的句子中词的id以及标签
     for seqs, labels in train_utils.batch_yield(dev, args.batch_size, word2id, tag2label, shuffle=False):
-        feed_dict, seq_len_list_ = train_utils.get_feed_dict(seqs, drop_keep=1.0)
-        logits, transition_params = sess.run([model.logits, model.transition_params],
-                                             feed_dict=feed_dict)
+        feed_dict, seq_len_list_ = train_utils.get_feed_dict(model, seqs, drop_keep=1.0)
+        log_its, transition_params = sess.run([model.logits, model.transition_params],
+                                              feed_dict=feed_dict)
         label_list_ = []
-        for logit, seq_len in zip(logits, seq_len_list):
-            viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
-            label_list_.append(viterbi_seq)
+        for log_it, seq_len in zip(log_its, seq_len_list):
+            vtb_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
+            label_list_.append(vtb_seq)
 
         label_list.extend(label_list_)
         seq_len_list.extend(seq_len_list_)
@@ -159,11 +157,11 @@ def test(data, file):
         evaluate(label_list, seq_len_list, data)
 
 
-def train(train_data, test_data):
+def train(train_corpus, test_corpus):
     """
     进行模型训练
-    :param train_data: 训练数据
-    :param test_data: 测试数据
+    :param train_corpus: 训练数据
+    :param test_corpus: 测试数据
     :return: 
     """
     # model.train
@@ -172,7 +170,7 @@ def train(train_data, test_data):
         tf.global_variables_initializer()  # 初始化模型参数
         model.add_summary(sess)
         for epoch in range(args.epoch):
-            run_one_epoch(sess, train_data, test_data, tag2label, epoch, saver)
+            run_one_epoch(sess, train_corpus, test_corpus, tag2label, epoch, saver)
 
 
 def run(operation):
@@ -185,9 +183,8 @@ def run(operation):
         train(train_data, test_data)
 
     if operation == 'test':
-        ckpt_file = tf.train.latest_checkpoint(model_path)
-        test(test_data, ckpt_file)
-
+        chk_file = tf.train.latest_checkpoint(model_path)
+        test(test_data, chk_file)
 
 
 if __name__ == '__main__':
