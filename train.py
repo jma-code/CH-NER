@@ -91,6 +91,7 @@ def run_one_epoch(sess, train, dev, tag2label, epoch, saver):
 
     label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
 
+
 if args.mode == 'train':
     # model.train
     saver = tf.train.Saver(tf.global_variables())

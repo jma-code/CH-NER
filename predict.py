@@ -6,10 +6,9 @@ from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
-import data
+from data_process import sentence2id, read_dictionary
 #import model
 import utils
-import eval
 
 
 def predict_total(sess, sent, batch_size, vocab, tag2label, shuffle):
@@ -31,7 +30,7 @@ def batch_yield(sent, batch_size, vocab, tag2label, shuffle):
 
     seqs, labels = [], []
     for (sent_, tag_) in sent:
-        sent_ = data.sentence2id(sent_, vocab)
+        sent_ = sentence2id(sent_, vocab)
         label_ = [tag2label[tag] for tag in tag_]
 
         if len(seqs) == batch_size:
@@ -74,11 +73,11 @@ tag2label = {"O": 0,
 
 
 #在会话中启动图
-#sess = tf.Session()
+sess = tf.Session()
 
 input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
 get_sent = [(input_sent, ['O'] * len(input_sent))]
-get_vocab = data.read_dictionary("data_path/word2id.pkl")
+get_vocab = read_dictionary("data/word2id")
 predict_total(sess, get_sent, 60, get_vocab, tag2label, False)
 
 
