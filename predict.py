@@ -37,7 +37,7 @@ def predict_one_batch(ses, seqs):
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
     log_its, transition_params = ses.run([model.log_its, model.transition_params],
-                                        feed_dict=feed_dict)
+                                         feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
     for log_it, seq_len in zip(log_its, seq_len_list):
