@@ -46,25 +46,25 @@ class ConfigTrain(Config):
     # 是否打乱数据集
     shuffle = True
     # 每次训练句子数
-    batch_size = 0
+    batch_size = 20
     # 迭代次数
-    epoch = 0
+    epoch = 1
     # 学习率
-    lr = 1
+    lr = 0.0001
     # 梯度裁剪
-    clip = 1
+    clip = 5.0
     # 优化器
-    optimizer = ''
+    optimizer = 'Adam'
     # 保留概率
-    dropout = 1
+    dropout = 0.5
     # 维度
-    embedding_dim = 1
+    embedding_dim = 300
     #是否更新
     update_embedding = True
     #隐藏层维度
-    hidden_dim = 1
+    hidden_dim = 300
     #tensorboard存储路径
-    summary_path = ''
+    summary_path = 'logs'
 
     def _init_(self, class_name, file_path):
         # 类名
