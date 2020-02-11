@@ -37,7 +37,7 @@ def predict_one_batch(ses, seqs):
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
     log_its, transition_params = ses.run([model.log_its, model.transition_params],
-                                         feed_dict=feed_dict)
+                                        feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
     for log_it, seq_len in zip(log_its, seq_len_list):
@@ -50,10 +50,6 @@ def predict_one_batch(ses, seqs):
 def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
     """
 
-    :param shuffle:
-    :param tag_label:
-    :param vocab:
-    :param batch_size:
     :param ses:
     :param sent:
     :param batch_size:
@@ -65,11 +61,11 @@ def demo_one(ses, sent, batch_size, vocab, tag_label, shuffle):
 
     # batch_yield就是把输入的句子每个字的id返回，以及每个标签转化为对应的tag2label的值
     label_list = []
-    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag_label, shuffle):
+    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag2label, shuffle):
         label_list_, _ = predict_one_batch(ses, seqs)
         label_list.extend(label_list_)
     label2tag = {}
-    for tag, label in tag2label.items():
+    for tag, label in tag_label.items():
         label2tag[label] = tag if label != 0 else label
     tag = [label2tag[label] for label in label_list[0]]
     return tag
