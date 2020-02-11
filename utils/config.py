@@ -65,6 +65,10 @@ class ConfigTrain(Config):
     hidden_dim = 1
     #tensorboard存储路径
     summary_path = ''
+    #字典路径
+    vocab_path = ''
+    #结果路径
+    result_path = ''
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -89,6 +93,8 @@ class ConfigTrain(Config):
         self.update_embedding = config.get(self.class_name, 'update_embedding')
         self.hidden_dim = config.get(self.class_name, 'hidden_dim')
         self.summary_path = config.get(self.class_name, 'summary_path')
+        self.vocab_path = config.get(self.class_name, 'vocab_path')
+        self.result_path = config.get(self.class_name, 'result_path')
 
 #预测
 class ConfigPredict(Config):
