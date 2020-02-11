@@ -29,7 +29,7 @@ class ConfigProcess(Config):
 
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path)
+        config.read(self.file_path, encoding='UTF-8')
         self.trainData_path = config.get(self.class_name, 'trainData_path')
         self.testData_path = config.get(self.class_name, 'testData_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
@@ -63,6 +63,8 @@ class ConfigTrain(Config):
     update_embedding = True
     #隐藏层维度
     hidden_dim = 1
+    #tensorboard存储路径
+    summary_path = ''
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -86,6 +88,7 @@ class ConfigTrain(Config):
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
         self.update_embedding = config.get(self.class_name, 'update_embedding')
         self.hidden_dim = config.get(self.class_name, 'hidden_dim')
+        self.summary_path = config.get(self.class_name, 'summary_path')
 
 #预测
 class ConfigPredict(Config):
@@ -97,6 +100,16 @@ class ConfigPredict(Config):
     demo_model = ''
     # 维度
     embedding_dim = 1
+    # 是否更新
+    update_embedding = 300
+    # 隐藏层维度
+    hidden_dim = 300
+    # 梯度裁剪
+    clip = 0
+    # tensorBoard存储路径
+    summary_path = ''
+    # 优化器
+    optimizer = ''
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -106,11 +119,16 @@ class ConfigPredict(Config):
     # 从配置文件中读取参数
     def load_config(self):
         config = configparser.ConfigParser()
-        config.read(self.file_path)
+        config.read(self.file_path, encoding='UTF-8')
         self.model_path = config.get(self.class_name, 'model_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.demo_model = config.get(self.class_name, 'demo_model')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
+        self.update_embedding = config.get(self.class_name, 'update_embedding')
+        self.hidden_dim = config.get(self.class_name, 'hidden_dim')
+        self.clip = config.get(self.class_name, 'clip')
+        self.summary_path = config.get(self.class_name, 'summary_path')
+        self.optimizer = config.get(self.class_name, 'optimizer')
 
 def get_logger(filename):
     logger = logging.getLogger('logger')

@@ -7,6 +7,16 @@ from tensorflow.contrib.rnn import LSTMCell
 class BiLSTM_CRF(object):
     # 初始化类中需要的变量(到时候考虑config)
     def __init__(self, embeddings, update_embedding, hidden_dim, num_tags, clip_grad, log_path, optimizer):
+        """
+
+        :param embeddings: 编码矩阵，random_embedding()
+        :param update_embedding: 更新矩阵，bool类型
+        :param hidden_dim: 隐藏层的维度
+        :param num_tags: 标注的长度，len(tag2label)
+        :param clip_grad: 梯度裁剪
+        :param log_path: 保存日志的路径
+        :param optimizer: 优化器
+        """
         self.embeddings = embeddings
         self.update_embedding = update_embedding
         self.hidden_dim = hidden_dim
@@ -107,4 +117,4 @@ class BiLSTM_CRF(object):
         :return:
         """
         self.merged = tf.summary.merge_all()
-        self.file_writer = tf.summary.FileWriter(self.log_path, sess.graph)
+        # self.file_writer = tf.summary.FileWriter(self.log_path, sess.graph)

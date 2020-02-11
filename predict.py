@@ -1,49 +1,47 @@
 import numpy as np
-import os, time, sys, random
 import tensorflow as tf
-from tensorflow.contrib.rnn import LSTMCell
-from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
-from data_process import sentence2id, read_dictionary
-#import model
-import utils
+from utils import train_utils
+from data_process import tag2label
+import utils.config as cf
+import data_process
 
+# 参数部分
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+params = cf.ConfigPredict('predict', 'config/params.conf')
+params.load_config()
+embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
+embedding_mat = np.float32(embedding_mat)
+embeddings = embedding_mat
+num_tags = len(data_process.tag2label)
+summary_path = "logs"
+'''
+预测引擎
+'''
 
-def predict_total(sess, sent, batch_size, vocab, tag2label, shuffle):
-    batch_yield(sent, batch_size, vocab, tag2label, shuffle)
-    get_tag = demo_one(sess, sent, batch_size, vocab, tag2label, shuffle)
-
-def batch_yield(sent, batch_size, vocab, tag2label, shuffle):
+def predict_one_batch(sess, seqs):
     """
 
-    :param data:
-    :param batch_size:
-    :param vocab:
-    :param tag2label:
-    :param shuffle:
-    :return:
+    :param sess:
+    :param seqs:
+    :return: label_list
+                 seq_len_list
     """
-    if shuffle:
-        random.shuffle(sent)
+    feed_dict, seq_len_list = train_utils.get_feed_dict(seqs, drop_keep=1.0)
 
-    seqs, labels = [], []
-    for (sent_, tag_) in sent:
-        sent_ = sentence2id(sent_, vocab)
-        label_ = [tag2label[tag] for tag in tag_]
-
-        if len(seqs) == batch_size:
-            yield seqs, labels
-            seqs, labels = [], []
-
-        seqs.append(sent_)
-        labels.append(label_)
-
-    if len(seqs) != 0:
-        yield seqs, labels
-
-
+    # transition_params代表转移概率，由crf_log_likelihood方法计算出
+    logits, transition_params = sess.run([model.logits, model.transition_params],
+                                         feed_dict=feed_dict)
+    label_list = []
+    # 默认使用CRF
+    for logit, seq_len in zip(logits, seq_len_list):
+        viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
+        label_list.append(viterbi_seq)
+    return label_list, seq_len_list
 
 def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     """
@@ -55,8 +53,8 @@ def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
 
     # batch_yield就是把输入的句子每个字的id返回，以及每个标签转化为对应的tag2label的值
     label_list = []
-    for seqs, labels in batch_yield(sent, batch_size, vocab, tag2label, shuffle):
-        label_list_, _ = BiLSTM_CRF.predict_one_batch(sess, seqs)
+    for seqs, labels in train_utils.batch_yield(sent, batch_size, vocab, tag2label, shuffle):
+        label_list_, _ = predict_one_batch(sess, seqs)
         label_list.extend(label_list_)
     label2tag = {}
     for tag, label in tag2label.items():
@@ -64,20 +62,93 @@ def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     tag = [label2tag[label] for label in label_list[0]]
     return tag
 
-## tags, BIO
-tag2label = {"O": 0,
-             "B-PER": 1, "I-PER": 2,
-             "B-LOC": 3, "I-LOC": 4,
-             "B-ORG": 5, "I-ORG": 6
-             }
+#根据输入的tag返回对应的字符
+def get_entity(tag_seq, char_seq):
+    PER = get_PER_entity(tag_seq, char_seq)
+    LOC = get_LOC_entity(tag_seq, char_seq)
+    ORG = get_ORG_entity(tag_seq, char_seq)
+    return PER, LOC, ORG
 
+#输出PER对应的字符
+def get_PER_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    PER = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-PER':
+            if 'per' in locals().keys():
+                PER.append(per)
+                del per
+            per = char
+            if i+1 == length:
+                PER.append(per)
+        if tag == 'I-PER':
+            per += char
+            if i+1 == length:
+                PER.append(per)
+        if tag not in ['I-PER', 'B-PER']:
+            if 'per' in locals().keys():
+                PER.append(per)
+                del per
+            continue
+    return PER
+'''
+数据后处理
+'''
+#输出LOC对应的字符
+def get_LOC_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    LOC = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-LOC':
+            if 'loc' in locals().keys():
+                LOC.append(loc)
+                del loc
+            loc = char
+            if i+1 == length:
+                LOC.append(loc)
+        if tag == 'I-LOC':
+            loc += char
+            if i+1 == length:
+                LOC.append(loc)
+        if tag not in ['I-LOC', 'B-LOC']:
+            if 'loc' in locals().keys():
+                LOC.append(loc)
+                del loc
+            continue
+    return LOC
 
-#在会话中启动图
-sess = tf.Session()
+#输出ORG对应的字符
+def get_ORG_entity(tag_seq, char_seq):
+    length = len(char_seq)
+    ORG = []
+    for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
+        if tag == 'B-ORG':
+            if 'org' in locals().keys():
+                ORG.append(org)
+                del org
+            org = char
+            if i+1 == length:
+                ORG.append(org)
+        if tag == 'I-ORG':
+            org += char
+            if i+1 == length:
+                ORG.append(org)
+        if tag not in ['I-ORG', 'B-ORG']:
+            if 'org' in locals().keys():
+                ORG.append(org)
+                del org
+            continue
+    return ORG
 
-input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
-get_sent = [(input_sent, ['O'] * len(input_sent))]
-get_vocab = read_dictionary("data/word2id")
-predict_total(sess, get_sent, 60, get_vocab, tag2label, False)
+if __name__ == '__main__':
+    model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path, params.optimizer)
+    model.build_graph()
+    input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
+    get_sent = [(input_sent, ['O'] * len(input_sent))]
+    get_vocab = data_process.read_dictionary("data/word2id")
+    #在会话中启动图
+    with tf.Session(config=config) as sess:
+        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
+
 
 
