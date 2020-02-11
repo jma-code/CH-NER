@@ -1,4 +1,5 @@
-import pickle, os
+import os
+import pickle
 import numpy as np
 
 '''
@@ -141,6 +142,9 @@ def random_embedding(vocab, embedding_dim):
 
 
 # 输入一句话，生成一个 sentence_id
+'''sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]'''
+
+
 def sentence2id(sent, word2id):
     """
 
