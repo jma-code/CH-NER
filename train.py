@@ -73,7 +73,7 @@ def run_one_epoch(sess, train_corpus, dev, tag_label, epoch, saver):
     """
     num_batches = (len(train_corpus) + args.batch_size - 1) // args.batch_size
     start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    batches = train_utils.batch_yield(train, args.batch_size, word2id, tag_label)
+    batches = train_utils.batch_yield(train_corpus, args.batch_size, word2id, tag_label)
 
     for step, (seqs, labels) in enumerate(batches):
         sys.stdout.write(' processing: {} batch / {} batches.'.format(step + 1, num_batches) + '\r')
