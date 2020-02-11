@@ -24,13 +24,27 @@ class BiLSTM_CRF(object):
         self.clip_grad = clip_grad
         self.log_path = log_path
         self.optimizer = optimizer
+        self.word_ids = None
+        self.labels = None
+        self.sequence_lengths = None
+        self.global_step = None
+        self.dropout_pl = None
+        self.lr_pl = None
+        self.word_embeddings = None
+        self.transition_params = None
+        self.log_its = None
+        self.train_op = None
+        self.init_op = None
+        self.merged = None
+        self.loss = None
+        self.file_writer = None
 
     def build_graph(self):
         # 添加占位符
         self.add_placeholders()
         # 网络结构
         self.lookup_layer_op()
-        self.biLSTM_layer_op()
+        self.model_layer_op()
 
         # 设置损失
         self.loss_op()
@@ -47,11 +61,12 @@ class BiLSTM_CRF(object):
 
     def lookup_layer_op(self):
         with tf.variable_scope("embedding"):
-            _word_embeddings = tf.Variable(self.embeddings, dtype=tf.float32, trainable=self.update_embedding, name="_word_embeddings")
+            _word_embeddings = tf.Variable(self.embeddings, dtype=tf.float32, trainable=self.update_embedding,
+                                           name="_word_embeddings")
             word_embeddings = tf.nn.embedding_lookup(params=_word_embeddings, ids=self.word_ids, name="word_embeddings")
             self.word_embeddings = tf.nn.dropout(word_embeddings, self.dropout_pl)
 
-    def biLSTM_layer_op(self):
+    def model_layer_op(self):
         with tf.variable_scope("Bi-LSTM"):
             cell_fw = LSTMCell(self.hidden_dim)
             cell_bw = LSTMCell(self.hidden_dim)
@@ -63,7 +78,7 @@ class BiLSTM_CRF(object):
             output = tf.concat([output_fw_seq, output_bw_seq], axis=-1)
             output = tf.nn.dropout(output, self.dropout_pl)
 
-            W = tf.get_variable(name="Weight",
+            w = tf.get_variable(name="Weight",
                                 shape=[2 * self.hidden_dim, self.num_tags],
                                 initializer=tf.contrib.layers.xavier_initializer(),
                                 dtype=tf.float32)
@@ -73,13 +88,13 @@ class BiLSTM_CRF(object):
                                 dtype=tf.float32)
             s = tf.shape(output)
             output = tf.reshape(output, [-1, 2 * self.hidden_dim])
-            pred = tf.matmul(output, W) + b
+            predict = tf.matmul(output, w) + b
 
-            self.logits = tf.reshape(pred, [-1, s[1], self.num_tags])
+            self.log_its = tf.reshape(predict, [-1, s[1], self.num_tags])
 
     def loss_op(self):
         with tf.variable_scope("CRF_loss"):
-            log_likelihood, self.transition_params = crf_log_likelihood(inputs=self.logits,
+            log_likelihood, self.transition_params = crf_log_likelihood(inputs=self.log_its,
                                                                         tag_indices=self.labels,
                                                                         sequence_lengths=self.sequence_lengths)
             self.loss = -tf.reduce_mean(log_likelihood)
@@ -106,7 +121,6 @@ class BiLSTM_CRF(object):
             grads_and_vars_clip = [[tf.clip_by_value(g, -self.clip_grad, self.clip_grad), v] for g, v in grads_and_vars]
             self.train_op = optim.apply_gradients(grads_and_vars_clip, global_step=self.global_step)
 
-
     def init_op(self):
         self.init_op = tf.global_variables_initializer()
 
@@ -117,4 +131,4 @@ class BiLSTM_CRF(object):
         :return:
         """
         self.merged = tf.summary.merge_all()
-        # self.file_writer = tf.summary.FileWriter(self.log_path, sess.graph)
+        self.file_writer = tf.summary.FileWriter(self.log_path, sess.graph)
