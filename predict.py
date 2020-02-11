@@ -23,6 +23,7 @@ summary_path = "logs"
 预测引擎
 '''
 
+# 输入句子id和保存好的模型参数进行预测，输出标签id
 def predict_one_batch(sess, seqs):
     """
 
@@ -43,6 +44,7 @@ def predict_one_batch(sess, seqs):
         label_list.append(viterbi_seq)
     return label_list, seq_len_list
 
+# 输入句子，得到预测标签id，并转化为label
 def demo_one(sess, sent, batch_size, vocab, tag2label, shuffle):
     """
 
