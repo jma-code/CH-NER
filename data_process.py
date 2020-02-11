@@ -141,8 +141,10 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
-# 输入一句话，生成一个 sentence_id
-'''sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]'''
+'''
+输入一句话，生成一个 sentence_id
+sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]
+'''
 
 
 def sentence2id(sent, word2id):
