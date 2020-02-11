@@ -37,7 +37,7 @@ def predict_one_batch(ses, seqs):
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
     log_its, transition_params = ses.run([model.log_its, model.transition_params],
-                                        feed_dict=feed_dict)
+                                         feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
     for log_it, seq_len in zip(log_its, seq_len_list):
@@ -83,7 +83,6 @@ def get_entity(tag_seq, char_seq):
 def get_PER_entity(tag_seq, char_seq):
     length = len(char_seq)
     PER = []
-    per = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-PER':
             if 'per' in locals().keys():
@@ -113,7 +112,6 @@ def get_PER_entity(tag_seq, char_seq):
 def get_LOC_entity(tag_seq, char_seq):
     length = len(char_seq)
     LOC = []
-    loc = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-LOC':
             if 'loc' in locals().keys():
@@ -138,7 +136,6 @@ def get_LOC_entity(tag_seq, char_seq):
 def get_ORG_entity(tag_seq, char_seq):
     length = len(char_seq)
     ORG = []
-    org = []
     for i, (char, tag) in enumerate(zip(char_seq, tag_seq)):
         if tag == 'B-ORG':
             if 'org' in locals().keys():
