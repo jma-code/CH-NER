@@ -36,13 +36,13 @@ def predict_one_batch(ses, seqs):
     feed_dict, seq_len_list = train_utils.get_feed_dict(model, seqs, drop_keep=1.0)
 
     # transition_params代表转移概率，由crf_log_likelihood方法计算出
-    logits, transition_params = ses.run([model.log_its, model.transition_params],
+    log_its, transition_params = ses.run([model.log_its, model.transition_params],
                                         feed_dict=feed_dict)
     label_list = []
     # 默认使用CRF
-    for log_it, seq_len in zip(logits, seq_len_list):
-        viterbi_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
-        label_list.append(viterbi_seq)
+    for log_it, seq_len in zip(log_its, seq_len_list):
+        vtb_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
+        label_list.append(vtb_seq)
     return label_list, seq_len_list
 
 
