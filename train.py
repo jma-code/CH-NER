@@ -54,15 +54,11 @@ train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
 logger = cf.get_logger('logs/1.txt')
 
-# 模型加载
-# model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
-#                    args.optimizer)
-# model.build_graph()
-
 
 def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
     """
     训练模型，训练一个批次
+    :param model: 模型
     :param sess: 训练模型的一次会话
     :param train_corpus: 训练数据
     :param dev: 用来验证的数据
@@ -93,7 +89,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
             saver.sace(sess, model_path, global_step=step_num)
 
     logger.info('=============test==============')
-    label_list_dev, seq_len_list_dev = dev_one_epoch(sess, dev)
+    label_list_dev, seq_len_list_dev = dev_one_epoch(model, sess, dev)
     evaluate(label_list_dev, dev, epoch)
 
 
@@ -126,6 +122,7 @@ def evaluate(label_list, data, epoch=None):
 def dev_one_epoch(model, sess, dev):
     """
 
+    :param model: 运行的模型
     :param sess: 训练的一次会话
     :param dev: 验证数据
     :return:
