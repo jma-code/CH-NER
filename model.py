@@ -34,7 +34,6 @@ class BiLSTM_CRF(object):
         self.transition_params = None
         self.log_its = None
         self.train_op = None
-        self.initop = None
         self.merged = None
         self.loss = None
         self.file_writer = None
@@ -98,6 +97,7 @@ class BiLSTM_CRF(object):
                                                                         tag_indices=self.labels,
                                                                         sequence_lengths=self.sequence_lengths)
             self.loss = -tf.reduce_mean(log_likelihood)
+            tf.summary.scalar("loss", self.loss)
 
     def trainstep_op(self):
         with tf.variable_scope("train"):
@@ -122,7 +122,7 @@ class BiLSTM_CRF(object):
             self.train_op = optim.apply_gradients(grads_and_vars_clip, global_step=self.global_step)
 
     def init_op(self):
-        self.initop = tf.global_variables_initializer()
+        self.init_op = tf.global_variables_initializer()
 
     def add_summary(self, sess):
         """
@@ -132,3 +132,4 @@ class BiLSTM_CRF(object):
         """
         self.merged = tf.summary.merge_all()
         self.file_writer = tf.summary.FileWriter(self.log_path, sess.graph)
+        # return self.merged
