@@ -84,7 +84,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
         _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step],
                                                      feed_dict=feed_dict)
 
-        if step + 1 == 1 or (step + 1) % 20 == 0 or step + 1 == num_batches:
+        if step + 1 == 1 or (step + 1) % args.batch_size == 0 or step + 1 == num_batches:
             print('logger info')
             logger.info('{} epoch {}, step {}, loss: {:.4}, total_step: {}'.format(start_time, epoch + 1, step + 1,
                                                                                    loss_train, step_num))
