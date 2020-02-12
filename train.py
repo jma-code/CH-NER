@@ -86,7 +86,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
                                                                                    loss_train, step_num))
 
         if step + 1 == num_batches:
-            saver.sace(sess, model_path, global_step=step_num)
+            saver.save(sess, model_path, global_step=step_num)
 
     logger.info('=============test==============')
     label_list_dev, seq_len_list_dev = dev_one_epoch(model, sess, dev)
