@@ -152,10 +152,13 @@ def test(data, file):
     :param data:测试数据
     :param file:模型
     """
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+                       args.optimizer)
+    model.build_graph()
     testsaver = tf.train.Saver()
     with tf.Session(config=config) as sess:
         testsaver.restore(sess, file)
-        label_list, seq_len_list = dev_one_epoch(sess, data)
+        label_list, seq_len_list = dev_one_epoch(model, sess, data)
         evaluate(label_list, seq_len_list, data)
 
 
