@@ -54,15 +54,16 @@ train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
 logger = cf.get_logger('logs/1.txt')
 
-# 模型加载
-model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
-                   args.optimizer)
-model.build_graph()
+# # 模型加载
+# model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+#                    args.optimizer)
+# model.build_graph()
 
 
-def run_one_epoch(sess, train_corpus, dev, tag_label, epoch, saver):
+def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
     """
     训练模型，训练一个批次
+    :param model:
     :param sess: 训练模型的一次会话
     :param train_corpus: 训练数据
     :param dev: 用来验证的数据
@@ -80,6 +81,7 @@ def run_one_epoch(sess, train_corpus, dev, tag_label, epoch, saver):
         step_num = epoch * num_batches + step + 1
 
         feed_dict, _ = train_utils.get_feed_dict(model, seqs, labels, args.lr, args.dropout)
+
         _, loss_train, summary, step_num_ = sess.run([model.train_op, model.loss, model.merged, model.global_step],
                                                      feed_dict=feed_dict)
         if step + 1 == 1 or (step + 1) % 20 == 0 or step + 1 == num_batches:
@@ -121,9 +123,10 @@ def evaluate(label_list, data, epoch=None):
         logger.info(_)
 
 
-def dev_one_epoch(sess, dev):
+def dev_one_epoch(model, sess, dev):
     """
 
+    :param model:
     :param sess: 训练的一次会话
     :param dev: 验证数据
     :return:
@@ -164,18 +167,15 @@ def train(train_corpus, test_corpus):
     :param test_corpus: 测试数据
     :return: 
     """
-    # model.train
     model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
                        args.optimizer)
     model.build_graph()
-
     saver = tf.train.Saver(tf.global_variables())
     with tf.Session(config=config) as sess:
-        # tf.global_variables_initializer()  # 初始化模型参数
-        sess.run(model.inits_op)
-        model.add_summary(sess)
+        tf.global_variables_initializer()  # 初始化模型参数
+        # model.add_summary(sess)
         for epoch in range(args.epoch):
-            run_one_epoch(sess, train_corpus, test_corpus, tag2label, epoch, saver)
+            run_one_epoch(model, sess, train_corpus, test_corpus, tag2label, epoch, saver)
 
 
 def run(operation):
@@ -185,7 +185,7 @@ def run(operation):
     :return:
     """
     if operation == 'train':
-        tf.reset_default_graph()
+        # tf.reset_default_graph()
         train(train_data, test_data)
 
     if operation == 'test':
