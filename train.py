@@ -39,7 +39,7 @@ parser.add_argument('--pretrain_embedding', type=str, default='random',
 parser.add_argument('--embedding_dim', type=int, default=params.embedding_dim, help='random init char embedding_dim')
 parser.add_argument('--shuffle', type=train_utils.str2bool, default=params.shuffle,
                     help='shuffle training data before each epoch')
-parser.add_argument('--mode', type=str, default='train', help='train/test/demo')
+parser.add_argument('--mode', type=str, default='test', help='train/test/demo')
 parser.add_argument('--demo_model', type=str, default='1521112368', help='model for test and demo')
 args = parser.parse_args()
 
@@ -109,6 +109,10 @@ def evaluate(label_list, data, epoch=None):
     for label_, (sent, tag) in zip(label_list, data):
         tag_ = [label2tag[label__] for label__ in label_]
         sent_res = []
+        if len(label_) != len(sent):
+            print(sent)
+            print(len(label_))
+            print(tag)
         for i in range(len(sent)):
             sent_res.append([sent[i], tag[i], tag_[i]])
         model_predict.append(sent_res)
@@ -134,7 +138,7 @@ def dev_one_epoch(model, sess, dev):
         log_its, transition_params = sess.run([model.log_its, model.transition_params],
                                               feed_dict=feed_dict)
         label_list_ = []
-        for log_it, seq_len in zip(log_its, seq_len_list):
+        for log_it, seq_len in zip(log_its, seq_len_list_):
             vtb_seq, _ = viterbi_decode(log_it[:seq_len], transition_params)
             label_list_.append(vtb_seq)
 
@@ -156,7 +160,7 @@ def test(data, file):
     with tf.Session(config=config) as sess:
         testsaver.restore(sess, file)
         label_list, seq_len_list = dev_one_epoch(model, sess, data)
-        evaluate(label_list, seq_len_list, data)
+        evaluate(label_list, data)
 
 
 def train(train_corpus, test_corpus):
