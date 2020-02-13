@@ -164,6 +164,6 @@ tag2label = {"O": 0,
              "B-LOC": 3, "I-LOC": 4,
              "B-ORG": 5, "I-ORG": 6
              }
-# 四个输入参数分别是：word2id路径、train_data路径、词频阈值、维数
+# 三个输入参数分别是：word2id路径、train_data路径、维数
 if __name__ == '__main__':
     get_embedding_mat = total(params.corpus_path, params.vocab_path, int(params.embedding_dim))
