@@ -23,6 +23,8 @@ class ConfigProcess(Config):
     vocab_path = ''
     # 维度
     embedding_dim = 1
+    # 词频阀值
+    min_count = 1
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -36,6 +38,7 @@ class ConfigProcess(Config):
         self.testData_path = config.get(self.class_name, 'testData_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
+        self.min_count = config.get(self.class_name,'min_count')
 
 
 # 训练
