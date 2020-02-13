@@ -2,12 +2,17 @@
 import argparse
 import random
 
+'''
+输入一句话，生成一个 sentence_id
+sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]
+'''
+
 
 def sentence2id(sent, word2id):
     """
 
-    :param sent: 句子
-    :param word2id: 字典
+    :param sent:
+    :param word2id:
     :return:
     """
     sentence_id = []
