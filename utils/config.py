@@ -137,7 +137,7 @@ class ConfigPredict(Config):
         self.embedding_dim = config.getint(self.class_name, 'embedding_dim')
         self.update_embedding = config.getboolean(self.class_name, 'update_embedding')
         self.hidden_dim = config.getint(self.class_name, 'hidden_dim')
-        self.clip = config.getint(self.class_name, 'clip')
+        self.clip = config.getfloat(self.class_name, 'clip')
         self.summary_path = config.get(self.class_name, 'summary_path')
         self.optimizer = config.get(self.class_name, 'optimizer')
         self.batch_size = config.getint(self.class_name, 'batch_size')
