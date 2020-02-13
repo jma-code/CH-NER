@@ -66,8 +66,7 @@ def vocab_build(vocab_path, corpus_path):
 
     :param vocab_path:
     :param corpus_path:
-    :param min_count:
-    :return:
+    :return: word2id
     """
     data = read_corpus(corpus_path)
     word2id = {}
