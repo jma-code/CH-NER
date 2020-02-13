@@ -132,6 +132,7 @@ def random_embedding(vocab, embedding_dim):
     embedding_mat = np.float32(embedding_mat)
     return embedding_mat
 
+
 tag2label = {"O": 0,
              "B-PER": 1, "I-PER": 2,
              "B-LOC": 3, "I-LOC": 4,
