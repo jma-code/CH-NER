@@ -35,7 +35,6 @@ class ConfigProcess(Config):
         self.corpus_path = config.get(self.class_name, 'corpus_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
-        self.min_count = config.get(self.class_name,'min_count')
 
 
 # 训练
