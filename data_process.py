@@ -1,5 +1,6 @@
 import os
 import pickle
+import random
 import numpy as np
 import utils.config as cf
 
@@ -85,13 +86,7 @@ def vocab_build(vocab_path, corpus_path, min_count):
             else:
                 word2id[word][1] += 1
     # 其实前面统计词频的目的就是这里删除低频词，删除完之后也就不用统计词频了
-    # 用来统计低频词
-    low_freq_words = []
-    for word, [word_id, word_freq] in word2id.items():
-        if word_freq < min_count and word != '<NUM>' and word != '<ENG>':
-            low_freq_words.append(word)
-    for word in low_freq_words:
-        del word2id[word]
+
 
     # 删除低频词后为每个字重新建立id，而不再统计词频
     new_id = 1
@@ -178,7 +173,7 @@ tag2label = {"O": 0,
              }
 # 四个输入参数分别是：word2id路径、train_data路径、词频阈值、维数
 if __name__ == '__main__':
-    get_embedding_mat = total(params.vocab_path, params.corpus_path, params.min_count,  params.embedding_dim)
+    get_embedding_mat = total(params.corpus_path, params.vocab_path, params.min_count, params.embedding_dim)
 
 # get_sent = ['当', '希', '望', '工', '程']
 # get_embedding_mat,  get_sentence_id = total("data/train_data", "data/word2id", 0, get_sent, 300)
