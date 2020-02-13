@@ -6,8 +6,8 @@ import random
 def sentence2id(sent, word2id):
     """
 
-    :param sent:
-    :param word2id:
+    :param sent: 句子
+    :param word2id: 字典
     :return:
     """
     sentence_id = []
@@ -19,7 +19,7 @@ def sentence2id(sent, word2id):
         if word not in word2id:
             word = '<UNK>'
         sentence_id.append(word2id[word])
-    return sentence_id  # 返回用编码表示的句子向量，但不是300维
+    return sentence_id
 
 
 def str2bool(v):
