@@ -133,32 +133,6 @@ def random_embedding(vocab, embedding_dim):
     embedding_mat = np.float32(embedding_mat)
     return embedding_mat
 
-
-'''
-输入一句话，生成一个 sentence_id
-sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]
-'''
-
-'''
-def sentence2id(sent, word2id):
-    """
-
-    :param sent:
-    :param word2id:
-    :return:
-    """
-    sentence_id = []
-    for word in sent:
-        if word.isdigit():
-            word = '<NUM>'
-        elif ('\u0041' <= word <= '\u005a') or ('\u0061' <= word <= '\u007a'):
-            word = '<ENG>'
-        if word not in word2id:
-            word = '<UNK>'
-        sentence_id.append(word2id[word])
-    return sentence_id
-'''
-
 tag2label = {"O": 0,
              "B-PER": 1, "I-PER": 2,
              "B-LOC": 3, "I-LOC": 4,
