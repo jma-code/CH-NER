@@ -119,6 +119,8 @@ class ConfigPredict(Config):
     summary_path = ''
     # 优化器
     optimizer = ''
+    # 每次预测句子数
+    batch_size = 1
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -138,7 +140,7 @@ class ConfigPredict(Config):
         self.clip = config.get(self.class_name, 'clip')
         self.summary_path = config.get(self.class_name, 'summary_path')
         self.optimizer = config.get(self.class_name, 'optimizer')
-
+        self.batch_size = config.get(self.class_name, 'batch_size')
 
 def get_logger(filename):
     logger = logging.getLogger('logger')
