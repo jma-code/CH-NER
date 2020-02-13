@@ -4,9 +4,8 @@ from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
 from utils import train_utils
-from data_process import tag2label
+from data_process import tag2label, read_dictionary
 import utils.config as cf
-import data_process
 
 # 参数部分
 config = tf.ConfigProto()
@@ -151,7 +150,7 @@ def get_ORG_entity(tag_seq, char_seq):
             continue
     return ORG
 
-def predict(model, batch_size, vocab, shuffle = False):
+def predict(model, batch_size, vocab, shuffle=False):
     ckpt_file = tf.train.latest_checkpoint(params.model_path)
     print(ckpt_file)
     saver = tf.train.Saver()
@@ -172,19 +171,13 @@ def predict(model, batch_size, vocab, shuffle = False):
                 print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 if __name__ == '__main__':
-    embedding_mat = np.random.uniform(-0.25, 0.25, (4756, 300))  # 4756*300
+    embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), int(params.embedding_dim)))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
-    num_tags = len(data_process.tag2label)
+    num_tags = len(tag2label)
     summary_path = "logs"
-    model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
+    model = BiLSTM_CRF(embeddings, params.update_embedding, int(params.hidden_dim), num_tags, float(params.clip), summary_path,
                        params.optimizer)
     model.build_graph()
-    predict(model, params.batch_size, params.vocab_path)
-    '''
-    input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
-    get_sent = [(input_sent, ['O'] * len(input_sent))]
-    get_vocab = data_process.read_dictionary("data/word2id")
-    with tf.Session(config=config) as sess:
-        demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
-    '''
+    predict(model, params.batch_size, read_dictionary(params.vocab_path))
+
