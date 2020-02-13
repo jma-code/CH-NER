@@ -2,7 +2,24 @@
 import argparse
 import random
 
-from data_process import sentence2id
+
+def sentence2id(sent, word2id):
+    """
+
+    :param sent:
+    :param word2id:
+    :return:
+    """
+    sentence_id = []
+    for word in sent:
+        if word.isdigit():
+            word = '<NUM>'
+        elif ('\u0041' <= word <= '\u005a') or ('\u0061' <= word <= '\u007a'):
+            word = '<ENG>'
+        if word not in word2id:
+            word = '<UNK>'
+        sentence_id.append(word2id[word])
+    return sentence_id  # 返回用编码表示的句子向量，但不是300维
 
 
 def str2bool(v):
