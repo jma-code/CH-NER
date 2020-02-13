@@ -151,7 +151,7 @@ def get_ORG_entity(tag_seq, char_seq):
             continue
     return ORG
 
-def predict(model, batch_size, vocab, shuffle):
+def predict(model, batch_size, vocab, shuffle = False):
     ckpt_file = tf.train.latest_checkpoint(params.model_path)
     print(ckpt_file)
     saver = tf.train.Saver()
@@ -180,9 +180,7 @@ if __name__ == '__main__':
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-
-
-    predict(params.model, 64, 'data/word2id', False)
+    predict(model, params.batch_size, params.vocab_path)
     '''
     input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
     get_sent = [(input_sent, ['O'] * len(input_sent))]
