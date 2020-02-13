@@ -15,10 +15,8 @@ class Config(object):
 
 # 数据处理
 class ConfigProcess(Config):
-    # 训练集路径
-    trainData_path = ''
-    # 测试集路径
-    testData_path = ''
+    # 数据集路径
+    corpus_path = ''
     # 字典存储路径
     vocab_path = ''
     # 维度
@@ -34,8 +32,7 @@ class ConfigProcess(Config):
     def load_config(self):
         config = configparser.ConfigParser()
         config.read(self.file_path, encoding='UTF-8')
-        self.trainData_path = config.get(self.class_name, 'trainData_path')
-        self.testData_path = config.get(self.class_name, 'testData_path')
+        self.corpus_path = config.get(self.class_name, 'corpus_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
         self.embedding_dim = config.get(self.class_name, 'embedding_dim')
         self.min_count = config.get(self.class_name,'min_count')
