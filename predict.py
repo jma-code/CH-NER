@@ -155,13 +155,35 @@ def get_ORG_entity(tag_seq, char_seq):
             continue
     return ORG
 
+def predict(model_path, embeddings, update_embedding, hidden_dim, num_tags, clip, summary_path, optimizer):
+    ckpt_file = tf.train.latest_checkpoint(model_path)
+    print(ckpt_file)
+    model = BiLSTM_CRF(embeddings, update_embedding, hidden_dim, num_tags, clip, summary_path, optimizer)
+    model.build_graph()
+    saver = tf.train.Saver()
+    with tf.Session(config=config) as sess:
+        print('============= demo =============')
+        saver.restore(sess, ckpt_file)
+        while (1):
+            print('Please input your sentence:')
+            demo_sent = input()
+            if demo_sent == '' or demo_sent.isspace():
+                print('See you next time!')
+                break
+            else:
+                demo_sent = list(demo_sent.strip())
+                demo_data = [(demo_sent, ['O'] * len(demo_sent))]
+                tag = model.demo_one(sess, demo_data)
+                PER, LOC, ORG = get_entity(tag, demo_sent)
+                print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 if __name__ == '__main__':
-    model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
+    predict(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
-    model.build_graph()
+    '''
     input_sent = ['小', '明', '的', '大', '学', '在', '北', '京', '的', '北', '京', '大', '学']
     get_sent = [(input_sent, ['O'] * len(input_sent))]
     get_vocab = data_process.read_dictionary("data/word2id")
     with tf.Session(config=config) as sess:
         demo_one(sess, get_sent, 60, get_vocab, tag2label, False)
+    '''
