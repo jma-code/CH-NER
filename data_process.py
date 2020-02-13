@@ -1,6 +1,10 @@
 import os
 import pickle
 import numpy as np
+import utils.config as cf
+
+params = cf.ConfigProcess('process', 'config/params.conf')
+params.load_config()
 
 '''
 预处理模块总函数。
@@ -9,13 +13,14 @@ import numpy as np
 '''
 
 
-def total(corpus_path, vocab_path, min_count, sent, embedding_dim):
+def total(corpus_path, vocab_path, min_count, embedding_dim):
     read_corpus(corpus_path)
     vocab_build(vocab_path, corpus_path, min_count)
     get_word2id = read_dictionary(vocab_path)
     get_embedding_mat = random_embedding(get_word2id, embedding_dim)
-    get_sentence_id = sentence2id(sent, get_word2id)
-    return get_embedding_mat, get_sentence_id
+    # get_sentence_id = sentence2id(sent, get_word2id)
+    # return get_embedding_mat, get_sentence_id
+    return get_embedding_mat
 
 
 # 输入train_data文件的路径，读取训练集的语料，输出train_data
@@ -146,7 +151,7 @@ def random_embedding(vocab, embedding_dim):
 sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程'...]
 '''
 
-
+'''
 def sentence2id(sent, word2id):
     """
 
@@ -164,13 +169,17 @@ def sentence2id(sent, word2id):
             word = '<UNK>'
         sentence_id.append(word2id[word])
     return sentence_id
-
+'''
 
 tag2label = {"O": 0,
              "B-PER": 1, "I-PER": 2,
              "B-LOC": 3, "I-LOC": 4,
              "B-ORG": 5, "I-ORG": 6
              }
+# 四个输入参数分别是：word2id路径、train_data路径、词频阈值、维数
+if __name__ == '__main__':
+    get_embedding_mat = total(params.vocab_path, params.corpus_path, params.min_count,  params.embedding_dim)
+
 # get_sent = ['当', '希', '望', '工', '程']
 # get_embedding_mat,  get_sentence_id = total("data/train_data", "data/word2id", 0, get_sent, 300)
 # print(get_embedding_mat, '\n', get_sentence_id)
