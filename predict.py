@@ -171,12 +171,12 @@ def predict(model, batch_size, vocab, shuffle=False):
                 print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 if __name__ == '__main__':
-    embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), int(params.embedding_dim)))
+    embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
     num_tags = len(tag2label)
     summary_path = "logs"
-    model = BiLSTM_CRF(embeddings, params.update_embedding, int(params.hidden_dim), num_tags, params.clip, summary_path,
+    model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
     predict(model, params.batch_size, read_dictionary(params.vocab_path))
