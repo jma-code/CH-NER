@@ -2,7 +2,7 @@ import os
 
 def conlleval(label_predict, label_path, metric_path):
     """
-
+    对CRF结果进行评估
     :param label_predict:
     :param label_path:
     :param metric_path:
