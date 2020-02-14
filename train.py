@@ -10,21 +10,6 @@ from utils import train_utils
 from tensorflow.contrib.crf import viterbi_decode
 from utils.eval import conlleval
 
-class Train(object):
-    params = ''
-
-    def __init__(self):
-        pass
-
-    def train(self):
-        pass
-
-    def test(self):
-        pass
-
-    def evaluate(self):
-        pass
-
 params = cf.ConfigTrain('train', 'config/params.conf')
 params.load_config()
 
