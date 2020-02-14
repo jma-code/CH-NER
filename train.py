@@ -44,14 +44,8 @@ parser.add_argument('--demo_model', type=str, default='1521112368', help='model 
 args = parser.parse_args()
 
 # 参数部分
-num_tags = len(tag2label)
-
 word2id = read_dictionary(params.vocab_path)
-
-
-embeddings = random_embedding(word2id, 300)
-train_data = read_corpus(args.train_data)
-test_data = read_corpus(args.test_data)
+embeddings = random_embedding(word2id, args.embedding_dim)
 logger = cf.get_logger('logs/1.txt')
 
 
@@ -153,8 +147,8 @@ def test(data, file):
     :param data:测试数据
     :param file:模型
     """
-    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, params.summary_path,
-                       args.optimizer)
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, len(tag2label), args.clip,
+                       params.summary_path, args.optimizer)
     model.build_graph()
     testsaver = tf.train.Saver()
     with tf.Session(config=config) as sess:
@@ -171,8 +165,8 @@ def train(train_corpus, test_corpus):
     :return: 
     """
     # model.train
-    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, params.summary_path,
-                       args.optimizer)
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, len(tag2label), args.clip,
+                       params.summary_path, args.optimizer)
     model.build_graph()
 
     saver = tf.train.Saver(tf.global_variables())
@@ -192,10 +186,13 @@ def run(operation):
     :return:
     """
     if operation == 'train':
+        train_data = read_corpus(args.train_data)
+        test_data = read_corpus(args.test_data)
         train(train_data, test_data)
 
     if operation == 'test':
         chk_file = tf.train.latest_checkpoint(params.result_path)
+        test_data = read_corpus(args.test_data)
         test(test_data, chk_file)
 
 
