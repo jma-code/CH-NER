@@ -28,8 +28,6 @@ class ConfigProcess(Config):
     vocab_path = ''
     # 维度
     embedding_dim = 1
-    # 词频阀值
-    min_count = 1
 
     def _init_(self, class_name, file_path):
         # 类名
@@ -119,12 +117,10 @@ class ConfigPredict(Config):
     model_path = ''
     # 字典路径
     vocab_path = ''
-    # 模型名
-    demo_model = ''
     # 维度
     embedding_dim = 1
     # 是否更新
-    update_embedding = 300
+    update_embedding = True
     # 隐藏层维度
     hidden_dim = 300
     # 梯度裁剪
@@ -150,7 +146,6 @@ class ConfigPredict(Config):
         config.read(self.file_path, encoding='UTF-8')
         self.model_path = config.get(self.class_name, 'model_path')
         self.vocab_path = config.get(self.class_name, 'vocab_path')
-        self.demo_model = config.get(self.class_name, 'demo_model')
         self.embedding_dim = config.getint(self.class_name, 'embedding_dim')
         self.update_embedding = config.getboolean(self.class_name, 'update_embedding')
         self.hidden_dim = config.getint(self.class_name, 'hidden_dim')
