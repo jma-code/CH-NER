@@ -3,8 +3,11 @@ import pickle
 import numpy as np
 import utils.config as cf
 
-params = cf.ConfigProcess('process', 'config/params.conf')
-params.load_config()
+tag2label = {"O": 0,
+             "B-PER": 1, "I-PER": 2,
+             "B-LOC": 3, "I-LOC": 4,
+             "B-ORG": 5, "I-ORG": 6
+             }
 
 '''
 预处理模块总函数。
@@ -26,7 +29,7 @@ def read_corpus(corpus_path):
     """
 
     read corpus and return the list of samples
-    :param corpus_path:
+    :param：corpus_path
     :return: data
     """
     data = []
@@ -90,7 +93,7 @@ def vocab_build(vocab_path, corpus_path):
 
     print(len(word2id))
     with open(vocab_path, 'wb') as fw:
-        # 序列化到名字为word2id.pkl文件
+        # 序列化到名字为word2id。pkl文件
         pickle.dump(word2id, fw)
 
     return word2id
@@ -133,11 +136,9 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
-tag2label = {"O": 0,
-             "B-PER": 1, "I-PER": 2,
-             "B-LOC": 3, "I-LOC": 4,
-             "B-ORG": 5, "I-ORG": 6
-             }
+
 # 三个输入参数分别是：word2id路径、train_data路径、维数
 if __name__ == '__main__':
-    get_embedding_mat = total(params.corpus_path, params.vocab_path, int(params.embedding_dim))
+    params = cf.ConfigProcess('process', 'config/params.conf')
+    params.load_config()
+    get_embedding_mat = total(params.corpus_path, params.vocab_path, params.embedding_dim)
