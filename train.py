@@ -24,7 +24,7 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.3
 parser = argparse.ArgumentParser(description='BiLSTM-CRF for Chinese NER task')
 parser.add_argument('--train_data', type=str, default=params.trainData_path, help='train data source')
 parser.add_argument('--test_data', type=str, default=params.testData_path, help='test data source')
-parser.add_argument('--batch_size', type=int, default=params.batch_size, help='#sample of each minibatch')
+parser.add_argument('--batch_size', type=int, default=params.batch_size, help='#sample of each minbatch')
 parser.add_argument('--epoch', type=int, default=params.epoch, help='#epoch of training')
 parser.add_argument('--hidden_dim', type=int, default=params.hidden_dim, help='#dim of hidden state')
 parser.add_argument('--optimizer', type=str, default=params.optimizer,
@@ -45,10 +45,10 @@ args = parser.parse_args()
 
 # 参数部分
 num_tags = len(tag2label)
+
 word2id = read_dictionary(params.vocab_path)
-summary_path = params.summary_path
-model_path = params.store_path
-result_path = params.result_path
+
+
 embeddings = random_embedding(word2id, 300)
 train_data = read_corpus(args.train_data)
 test_data = read_corpus(args.test_data)
@@ -86,7 +86,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
                                                                                    loss_train, step_num))
 
         if step + 1 == num_batches:
-            saver.save(sess, model_path, global_step=step_num)
+            saver.save(sess, params.store_path, global_step=step_num)
 
     logger.info('=============test==============')
     label_list_dev, seq_len_list_dev = dev_one_epoch(model, sess, dev)
@@ -95,7 +95,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
 
 def evaluate(label_list, data, epoch=None):
     """
-
+    评估模型标注结果
     :param label_list:
     :param data:
     :param epoch:
@@ -117,15 +117,15 @@ def evaluate(label_list, data, epoch=None):
             sent_res.append([sent[i], tag[i], tag_[i]])
         model_predict.append(sent_res)
     epoch_num = str(epoch + 1) if epoch is not None else 'test'
-    label_path = os.path.join(result_path, 'label_' + epoch_num)
-    metric_path = os.path.join(result_path, 'result_metric_' + epoch_num)
+    label_path = os.path.join(params.result_path, 'label_' + epoch_num)
+    metric_path = os.path.join(params.result_path, 'result_metric_' + epoch_num)
     for _ in conlleval(model_predict, label_path, metric_path):
         logger.info(_)
 
 
 def dev_one_epoch(model, sess, dev):
     """
-
+    对一个epoch进行验证
     :param model: 运行的模型
     :param sess: 训练的一次会话
     :param dev: 验证数据
@@ -153,7 +153,7 @@ def test(data, file):
     :param data:测试数据
     :param file:模型
     """
-    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, params.summary_path,
                        args.optimizer)
     model.build_graph()
     testsaver = tf.train.Saver()
@@ -171,7 +171,7 @@ def train(train_corpus, test_corpus):
     :return: 
     """
     # model.train
-    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, summary_path,
+    model = BiLSTM_CRF(embeddings, args.update_embedding, args.hidden_dim, num_tags, args.clip, params.summary_path,
                        args.optimizer)
     model.build_graph()
 
@@ -187,7 +187,7 @@ def train(train_corpus, test_corpus):
 
 def run(operation):
     """
-
+    选择对模型的操作，包括训练和测试
     :param operation:
     :return:
     """
@@ -195,7 +195,7 @@ def run(operation):
         train(train_data, test_data)
 
     if operation == 'test':
-        chk_file = tf.train.latest_checkpoint(model_path)
+        chk_file = tf.train.latest_checkpoint(params.result_path)
         test(test_data, chk_file)
 
 
