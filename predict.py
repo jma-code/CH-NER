@@ -11,22 +11,14 @@ import utils.config as cf
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
-params = cf.ConfigPredict('predict', 'config/params.conf')
-params.load_config()
-
-'''
-预测引擎
-'''
 
 
-# 输入句子id和保存好的模型参数进行预测，输出标签id
 def predict_one_batch(model, ses, seqs):
     """
-
-    :param ses:
-    :param seqs:
-    :return: label_list
-                 seq_len_list
+    预测引擎，输入句子id和保存好的模型参数进行预测，输出标签id
+    :param ses: 使用会话
+    :param seqs: 句子id
+    :return: label_list seq_len_list 标签id 句子id
     """
     feed_dict, seq_len_list = train_utils.get_feed_dict(model, seqs, drop_keep=1.0)
 
@@ -41,17 +33,16 @@ def predict_one_batch(model, ses, seqs):
     return label_list, seq_len_list
 
 
-# 输入句子，得到预测标签id，并转化为label
 def demo_one(model, ses, sent, batch_size, vocab, shuffle):
     """
-
-    :param ses:
-    :param sent:
-    :param batch_size:
-    :param vocab:
-    :param tag_label:
-    :param shuffle:
-    :return:
+    输入句子，得到预测标签id，并转化为label
+    :param model: 保存好的模型
+    :param ses: 使用会话
+    :param sent: 输入要进行实体抽取的句子
+    :param batch_size: 每次预测的句子数
+    :param vocab:  word2id
+    :param shuffle: 默认为False
+    :return: tag 预测标签
     """
 
     # batch_yield就是把输入的句子每个字的id返回，以及每个标签转化为对应的tag2label的值
@@ -66,7 +57,13 @@ def demo_one(model, ses, sent, batch_size, vocab, shuffle):
     return tag
 
 
-# 根据输入的tag返回对应的字符
+"""
+数据后处理
+根据输入的tag和句子返回对应的字符
+其中包括抽取出对应的人名、地名、组织名
+"""
+
+
 def get_entity(tag_seq, char_seq):
     PER = get_PER_entity(tag_seq, char_seq)
     LOC = get_LOC_entity(tag_seq, char_seq)
@@ -96,11 +93,6 @@ def get_PER_entity(tag_seq, char_seq):
                 del per
             continue
     return PER
-
-
-'''
-数据后处理
-'''
 
 
 # 输出LOC对应的字符
@@ -150,14 +142,24 @@ def get_ORG_entity(tag_seq, char_seq):
             continue
     return ORG
 
+
 def predict(model, batch_size, vocab, shuffle=False):
+    """
+    预测模块总函数。
+    输入：保存好的模型、每次预测的句子数、word2id字典、交互界面输入的需要实体抽取的句子
+    输出：实体抽取的结果
+    :param model: 保存好的模型
+    :param batch_size: 每次预测的句子数
+    :param vocab: word2id
+    :param shuffle: 默认为False
+    """
     ckpt_file = tf.train.latest_checkpoint(params.model_path)
     print(ckpt_file)
     saver = tf.train.Saver()
     with tf.Session(config=config) as sess:
         print('============= demo =============')
         saver.restore(sess, ckpt_file)
-        while (1):
+        while 1:
             print('Please input your sentence:')
             demo_sent = input()
             if demo_sent == '' or demo_sent.isspace():
@@ -170,7 +172,10 @@ def predict(model, batch_size, vocab, shuffle=False):
                 PER, LOC, ORG = get_entity(tag, demo_sent)
                 print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
+
 if __name__ == '__main__':
+    params = cf.ConfigPredict('predict', 'config/params.conf')
+    params.load_config()
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
@@ -179,6 +184,4 @@ if __name__ == '__main__':
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-
     predict(model, params.batch_size, read_dictionary(params.vocab_path))
-
