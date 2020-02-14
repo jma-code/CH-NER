@@ -179,5 +179,6 @@ if __name__ == '__main__':
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
+
     predict(model, params.batch_size, read_dictionary(params.vocab_path))
 
