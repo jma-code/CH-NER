@@ -5,7 +5,7 @@ import argparse
 import os
 import utils.config as cf
 from model import BiLSTM_CRF
-from data_process import random_embedding, read_dictionary, read_corpus, tag2label
+from data_process import random_embedding, read_dictionary, read_corpus
 from utils import train_utils
 from tensorflow.contrib.crf import viterbi_decode
 from utils.eval import conlleval
