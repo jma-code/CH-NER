@@ -10,6 +10,7 @@ sentence_id的形状为[1,2,3,4,...]对应的sent为['当','希','望','工',程
 
 def sentence2id(sent, word2id):
     """
+    create by jty
     对句子进行向量化
     :param sent:
     :param word2id:
@@ -27,6 +28,7 @@ def sentence2id(sent, word2id):
     return sentence_id
 
 
+# create by ljx
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -38,6 +40,7 @@ def str2bool(v):
 
 def batch_yield(data, batch_size, vocab, tag2label, shuffle=False):
     """
+    create by ljx
     将输入的数据转换为模型可以训练的输入数据
     :param data: 输入数据
     :param batch_size: 一次处理的数据
@@ -65,6 +68,7 @@ def batch_yield(data, batch_size, vocab, tag2label, shuffle=False):
 
 def pad_sequence(sequences, pad_mark=0):
     """
+    create by ljx
     对输入序列进行填充，使用pad_mark进行填充
     :param sequences: 输入的序列
     :param pad_mark: 填充的字符
@@ -82,6 +86,7 @@ def pad_sequence(sequences, pad_mark=0):
 
 def get_feed_dict(model, seqs, labels=None, lr=None, drop_keep=None):
     """
+    create by ljx
     将batch_yield的数据进行填充和模型训练参数一起传入模型
     :param model: (传入正在训练的模型)
     :param seqs: batch_yield后的序列
