@@ -82,7 +82,7 @@ def vocab_build(vocab_path, corpus_path):
     word2id['<UNK>'] = new_id
     word2id['<PAD>'] = 0
 
-    print(len(word2id))
+    # print(len(word2id))
     with open(vocab_path, 'wb') as fw:
         # 序列化到名字为word2id。pkl文件
         pickle.dump(word2id, fw)
@@ -100,7 +100,7 @@ def read_dictionary(vocab_path):
     vocab_path = os.path.join(vocab_path)
     with open(vocab_path, 'rb') as fr:
         word2id = pickle.load(fr)
-    print('vocab_size:', len(word2id))
+    # print('vocab_size:', len(word2id))
     return word2id
 
 
