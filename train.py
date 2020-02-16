@@ -121,7 +121,7 @@ def evaluate(label_list, data, epoch=None):
 
 def dev_one_epoch(model, sess, dev):
     """
-    create by mj
+    created by jma
     对一个epoch进行验证
     :param model: 运行的模型
     :param sess: 训练的一次会话
@@ -146,7 +146,7 @@ def dev_one_epoch(model, sess, dev):
 
 def test(data, file):
     """
-    create by mj
+    created by jma
     模型测试
     :param data:测试数据
     :param file:模型

@@ -12,6 +12,7 @@ tag2label = {"O": 0,
 
 def total(corpus_path, vocab_path, embedding_dim):
     """
+    Created by jty
     预处理模块总函数。
     输入：训练数据路径、word2id字典保存路径、词频阈值、测试输入句子、向量化维数
     输出：训练数据向量化结果、测试输入句子id
@@ -25,6 +26,7 @@ def total(corpus_path, vocab_path, embedding_dim):
 
 def read_corpus(corpus_path):
     """
+    Created by jty
     输入train_data文件的路径，读取训练集的语料，输出train_data
     read corpus and return the list of samples
     :param：corpus_path
@@ -58,6 +60,7 @@ def read_corpus(corpus_path):
 
 def vocab_build(vocab_path, corpus_path):
     """
+    Created by jty
     由train_data来构造一个(统计非重复字)字典{'第一个字':[对应的id,该字出现的次数],'第二个字':[对应的id,该字出现的次数], , ,}
     去除低频词，生成一个word_id的字典并保存在输入的vocab_path的路径下，保存的方法是pickle模块自带的dump方法，保存后的文件格式
     是word2id.pkl文件
@@ -95,6 +98,7 @@ def vocab_build(vocab_path, corpus_path):
 
 def read_dictionary(vocab_path):
     """
+    Created by jty
     通过pickle模块自带的load方法(反序列化方法)加载输出word2id
     :param vocab_path:
     :return:
@@ -108,6 +112,7 @@ def read_dictionary(vocab_path):
 
 def random_embedding(vocab, embedding_dim):
     """
+    Created by jty
     输入vocab，vocab就是前面得到的word2id，embedding_dim=300
     :param vocab:
     :param embedding_dim:
