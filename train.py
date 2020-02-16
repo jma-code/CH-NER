@@ -47,6 +47,7 @@ args = parser.parse_args()
 word2id = read_dictionary(params.vocab_path)
 embeddings = random_embedding(word2id, args.embedding_dim)
 logger = cf.get_logger('logs/1.txt')
+tag2label = params.tag2label
 
 
 def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
