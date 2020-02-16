@@ -1,6 +1,7 @@
 import configparser
 import logging
 
+
 class Config(object):
     """
     created by jma
@@ -8,6 +9,11 @@ class Config(object):
     params:log_path：日志存储路径
     """
     log_path = ''
+    tag2label = {"O": 0,
+                 "B-PER": 1, "I-PER": 2,
+                 "B-LOC": 3, "I-LOC": 4,
+                 "B-ORG": 5, "I-ORG": 6
+                 }
 
     def __init__(self, class_name, file_path):
         self.class_name = class_name
@@ -19,7 +25,9 @@ class Config(object):
         加载
         :return:
         """
-        pass
+        config = configparser.ConfigParser()
+        config.read(self.file_path, encoding='UTF-8')
+        
 
 
 # 数据处理
