@@ -7,7 +7,10 @@ from utils import train_utils
 from data_process import read_dictionary
 import utils.config as cf
 
+
 # 参数部分
+params = cf.ConfigPredict('predict', 'config/params.conf')
+params.load_config()
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
@@ -178,8 +181,6 @@ def predict(model, batch_size, vocab, tag2label, shuffle=False):
 
 
 def run():
-    params = cf.ConfigPredict('predict', 'config/params.conf')
-    params.load_config()
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
