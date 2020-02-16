@@ -3,12 +3,6 @@ import pickle
 import numpy as np
 import utils.config as cf
 
-tag2label = {"O": 0,
-             "B-PER": 1, "I-PER": 2,
-             "B-LOC": 3, "I-LOC": 4,
-             "B-ORG": 5, "I-ORG": 6
-             }
-
 
 def total(corpus_path, vocab_path, embedding_dim):
     """
