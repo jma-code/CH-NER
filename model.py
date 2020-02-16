@@ -3,12 +3,11 @@ import tensorflow as tf
 from tensorflow.contrib.crf import crf_log_likelihood
 from tensorflow.contrib.rnn import LSTMCell
 
-
+# create by ljx
 class BiLSTM_CRF(object):
-    # 初始化类中需要的变量(到时候考虑config)
     def __init__(self, embeddings, update_embedding, hidden_dim, num_tags, clip_grad, log_path, optimizer):
         """
-
+        初始化模型及其参数
         :param embeddings: 编码矩阵，random_embedding()
         :param update_embedding: 更新矩阵，bool类型
         :param hidden_dim: 隐藏层的维度
