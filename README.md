@@ -32,13 +32,19 @@
 ## 运行
 
 ### train
+``` 
 python3 main.py --mode=train
+```
 
 ### test
+```
 python3 main.py --mode=test
+```
 
 ### predict
+```
 python3 main.py --mode=predict
+```
 
 ## 相关文献
 + [Bidirectional LSTM-CRF Models for Sequence Tagging](https://arxiv.org/pdf/1508.01991v1.pdf)
