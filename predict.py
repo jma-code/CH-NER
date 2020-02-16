@@ -177,7 +177,7 @@ def predict(model, batch_size, vocab, tag2label, shuffle=False):
                 print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 
-if __name__ == '__main__':
+def run():
     params = cf.ConfigPredict('predict', 'config/params.conf')
     params.load_config()
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
