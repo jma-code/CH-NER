@@ -4,7 +4,7 @@ from tensorflow.contrib.crf import viterbi_decode
 
 from model import BiLSTM_CRF
 from utils import train_utils
-from data_process import tag2label, read_dictionary
+from data_process import read_dictionary
 import utils.config as cf
 
 # 参数部分
@@ -34,7 +34,7 @@ def predict_one_batch(model, ses, seqs):
     return label_list, seq_len_list
 
 
-def demo_one(model, ses, sent, batch_size, vocab, shuffle):
+def demo_one(model, ses, sent, batch_size, vocab, shuffle, tag2label):
     """
     Created by jty
     输入句子，得到预测标签id，并转化为label
@@ -146,7 +146,7 @@ def get_ORG_entity(tag_seq, char_seq):
     return ORG
 
 
-def predict(model, batch_size, vocab, shuffle=False):
+def predict(model, batch_size, vocab, tag2label, shuffle=False):
     """
     Created by jty
     预测模块总函数。
@@ -172,7 +172,7 @@ def predict(model, batch_size, vocab, shuffle=False):
             else:
                 demo_sent = list(demo_sent.strip())
                 demo_data = [(demo_sent, ['O'] * len(demo_sent))]
-                tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle)
+                tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
                 PER, LOC, ORG = get_entity(tag, demo_sent)
                 print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
@@ -183,9 +183,9 @@ if __name__ == '__main__':
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
-    num_tags = len(tag2label)
+    num_tags = len(params.tag2label)
     summary_path = "logs"
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-    predict(model, params.batch_size, read_dictionary(params.vocab_path))
+    predict(model, params.batch_size, read_dictionary(params.vocab_path), params.tag2label)
