@@ -15,6 +15,7 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.3
 
 def predict_one_batch(model, ses, seqs):
     """
+    Created by jty
     预测引擎，输入句子id和保存好的模型参数进行预测，输出标签id
     :param ses: 使用会话
     :param seqs: 句子id
@@ -35,6 +36,7 @@ def predict_one_batch(model, ses, seqs):
 
 def demo_one(model, ses, sent, batch_size, vocab, shuffle):
     """
+    Created by jty
     输入句子，得到预测标签id，并转化为label
     :param model: 保存好的模型
     :param ses: 使用会话
@@ -58,6 +60,7 @@ def demo_one(model, ses, sent, batch_size, vocab, shuffle):
 
 
 """
+Created by jty
 数据后处理
 根据输入的tag和句子返回对应的字符
 其中包括抽取出对应的人名、地名、组织名
@@ -145,6 +148,7 @@ def get_ORG_entity(tag_seq, char_seq):
 
 def predict(model, batch_size, vocab, shuffle=False):
     """
+    Created by jty
     预测模块总函数。
     输入：保存好的模型、每次预测的句子数、word2id字典、交互界面输入的需要实体抽取的句子
     输出：实体抽取的结果
