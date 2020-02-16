@@ -51,6 +51,7 @@ logger = cf.get_logger('logs/1.txt')
 
 def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
     """
+    create by ljx
     训练模型，训练一个批次
     :param model: 模型
     :param sess: 训练模型的一次会话
@@ -89,6 +90,7 @@ def run_one_epoch(model, sess, train_corpus, dev, tag_label, epoch, saver):
 
 def evaluate(label_list, data, epoch=None):
     """
+    create by mj
     评估模型标注结果
     :param label_list:
     :param data:
@@ -119,6 +121,7 @@ def evaluate(label_list, data, epoch=None):
 
 def dev_one_epoch(model, sess, dev):
     """
+    create by mj
     对一个epoch进行验证
     :param model: 运行的模型
     :param sess: 训练的一次会话
@@ -143,6 +146,7 @@ def dev_one_epoch(model, sess, dev):
 
 def test(data, file):
     """
+    create by mj
     模型测试
     :param data:测试数据
     :param file:模型
@@ -159,6 +163,7 @@ def test(data, file):
 
 def train(train_corpus, test_corpus):
     """
+    create by ljx
     进行模型训练
     :param train_corpus: 训练数据
     :param test_corpus: 测试数据
@@ -181,6 +186,7 @@ def train(train_corpus, test_corpus):
 
 def run(operation):
     """
+    create by ljx
     选择对模型的操作，包括训练和测试
     :param operation:
     :return:
