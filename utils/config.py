@@ -3,6 +3,7 @@ import logging
 
 class Config(object):
     """
+    created by jma
     配置类
     params:log_path：日志存储路径
     """
@@ -14,6 +15,7 @@ class Config(object):
 
     def load_config(self):
         """
+        created by jma
         加载
         :return:
         """
@@ -36,6 +38,7 @@ class ConfigProcess(Config):
 
     def load_config(self):
         """
+        created by jma
         加载数据预处理参数
         :return:
         """
@@ -88,6 +91,7 @@ class ConfigTrain(Config):
 
     def load_config(self):
         """
+        created by jma
         加载训练参数
         :return:
         """
@@ -139,6 +143,7 @@ class ConfigPredict(Config):
 
     def load_config(self):
         """
+        created by jma
         加载预测参数
         :return:
         """
@@ -156,6 +161,7 @@ class ConfigPredict(Config):
 
 def get_logger(filename):
     """
+    created by jma
     :param filename:  文件名
     :return:
     """
