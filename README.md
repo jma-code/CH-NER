@@ -9,7 +9,7 @@
 对于一个中文句子，这个句子中的每个字符都有一个属于集合{O，B-PER，I-PER，B-LOC，I-LOC，B-ORG，I-ORG}的标记。
 第一层，look-up层，旨在将每个字符表示从一个独热向量转换为字符嵌入。
 第二层，BiLSTM层，可以有效地利用过去和将来的输入信息，自动提取特征。
-第三层，CRF层，在一个句子中为每个字符标记标签。如果我们使用Softmax进行标记，我们可能会得到非随机标记序列，因为Softmax层独立地标记每个位置。我们知道“I-LOC”不能跟在“B-PER”后面，但Softmax不知道。与Softmax相比，CRF层可以利用句子级的标签信息，对两个不同标签的转换行为进行建模。
+第三层，CRF层，在一个句子中为每个字符标记标签。如果使用Softmax进行标记，由于Softmax层独立地标记每个位置，可能会得到非随机标记序列。“I-LOC”不能跟在“B-PER”后面，但Softmax不知道。与Softmax相比，CRF层可以利用句子级的标签信息，对两个不同标签的转换行为进行建模。
 
 ## 数据集
 数据集使用的是微软亚研院提供的的中文数据集
@@ -32,13 +32,19 @@
 ## 运行
 
 ### train
+``` 
 python3 main.py --mode=train
+```
 
 ### test
+```
 python3 main.py --mode=test
+```
 
 ### predict
+```
 python3 main.py --mode=predict
+```
 
 ## 相关文献
 + [Bidirectional LSTM-CRF Models for Sequence Tagging](https://arxiv.org/pdf/1508.01991v1.pdf)
