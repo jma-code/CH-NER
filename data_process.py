@@ -17,7 +17,7 @@ def total(corpus_path, vocab_path, embedding_dim):
     get_embedding_mat = random_embedding(get_word2id, embedding_dim)
     return get_embedding_mat
 
-def data_clean(corpus_path):
+def data_clean(corpus_path, clean_path):
     """
     Created by jty
     输入train_data文件的路径，读取训练集的语料，输出train_data
@@ -25,15 +25,22 @@ def data_clean(corpus_path):
     :param：corpus_path
     :return: data
     """
-    with open("train_data.txt", encoding='utf-8') as fw:
-        with open("train_data_w", 'w', encoding='utf-8') as fwn:
+    with open(corpus_path, encoding='utf-8') as fw:
+        with open(clean_path, 'w', encoding='utf-8') as fwn:
             lines = fw.readlines()
             for line in lines:
                 if line != '\n':
                     char, label = line.strip().split()
-                    if label == 'I-MISC':
+                    if label == 'I-MISC' or 'B-MISC':
                         label = 'O'
-                        print('exchange')
+                    if label == 'B-PERSON':
+                        label = 'B-RER'
+                    if label == 'I-PERSON':
+                        label = 'I-RER'
+                    if label == 'B-GPE':
+                        label = 'B-LOC'
+                    if label == 'I-GPE':
+                        label = 'I-LOC'
                     fwn.write(char + ' ' + label + '\n')
                 else:
                     fwn.write("\n")
@@ -223,8 +230,7 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
-a, b, c, d, e, f, g, h = data_clean('data/weibo_dev.txt')
-print(a, b, c, d, e, f, g, h)
+data_clean('data/rm_train_data.txt', 'data/rm_clean_train.txt')
 if __name__ == '__main__':
     params = cf.ConfigProcess('process', 'config/params.conf')
     params.load_config()
