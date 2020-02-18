@@ -17,6 +17,102 @@ def total(corpus_path, vocab_path, embedding_dim):
     get_embedding_mat = random_embedding(get_word2id, embedding_dim)
     return get_embedding_mat
 
+def data_clean(corpus_path):
+    """
+    Created by jty
+    输入train_data文件的路径，读取训练集的语料，输出train_data
+    read corpus and return the list of samples
+    :param：corpus_path
+    :return: data
+    """
+    with open("train_data.txt", encoding='utf-8') as fw:
+        with open("train_data_w", 'w', encoding='utf-8') as fwn:
+            lines = fw.readlines()
+            for line in lines:
+                if line != '\n':
+                    char, label = line.strip().split()
+                    if label == 'I-MISC':
+                        label = 'O'
+                        print('exchange')
+                    fwn.write(char + ' ' + label + '\n')
+                else:
+                    fwn.write("\n")
+
+
+
+    '''
+    per1 = 0
+    per2 = 0
+    loc1 = 0
+    loc2 = 0
+    org1 = 0
+    org2 = 0
+    org3 = 0
+    sentence_count = 0
+    with open(corpus_path, encoding='utf-8') as fr:
+        lines的形状为['北\tB-LOC\n','京\tI-LOC\n','的\tO\n','...']
+        lines = fr.readlines()
+    for line in lines:
+        if line.find("B-PER.NOM") > -1:
+            per1 = per1 + 1
+        if line.find("B-PER.NAM") > -1:
+            per2 = per2 + 1
+        if line.find("B-LOC.NOM") > -1:
+            loc1 = loc1 + 1
+        if line.find("B-LOC.NAM") > -1:
+            loc2 = loc2 + 1
+        if line.find("B-GPE.NAM") > -1:
+            org1 = org1 + 1
+        if line.find("B-ORG.NOM") > -1:
+            org2 = org2 + 1
+        if line.find("B-ORG.NAM") > -1:
+            org3 = org3 + 1
+        if line == '\n':
+            sentence_count = sentence_count + 1
+    for line in lines:
+        if line.find("B-PERSON") > -1:
+            per = per + 1
+        if line.find("B-LOC") > -1:
+            loc = loc + 1
+        if line.find("B-GPE") > -1:
+            gpe = gpe + 1
+        if line.find("B-ORG") > -1:
+            org = org + 1
+        if line.find("B-MISC") > -1:
+            o = o + 1
+        if line == '\n':
+            sentence_count = sentence_count + 1
+    for line in lines:
+        if line.find("B-PER") > -1:
+            per = per + 1
+        if line.find("B-LOC") > -1:
+            loc = loc + 1
+        if line.find("B-GPE") > -1:
+            gpe = gpe + 1
+        if line.find("B-ORG") > -1:
+            org = org + 1
+        if line.find("O") > -1:
+            o = o + 1
+        if line == '\n':
+            sentence_count = sentence_count + 1
+
+    for line in lines:
+        if line.find("B-PER") > -1:
+            per = per + 1
+        if line.find("B-LOC") > -1:
+            loc = loc + 1
+        if line.find("B-ORG") > -1:
+            org = org + 1
+        if line.find("O") > -1:
+            o = o + 1
+        if line == '\n':
+            sentence_count = sentence_count + 1
+        #line.replace('O', 'B-MISC')
+        #x = line
+        #line.replace("B-person", "B-PER")
+    return per1, per2, loc1, loc2, org1, org2, org3, sentence_count
+    '''
+
 
 def read_corpus(corpus_path):
     """
@@ -127,6 +223,8 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
+a, b, c, d, e, f, g, h = data_clean('data/weibo_dev.txt')
+print(a, b, c, d, e, f, g, h)
 if __name__ == '__main__':
     params = cf.ConfigProcess('process', 'config/params.conf')
     params.load_config()
