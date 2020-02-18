@@ -31,22 +31,21 @@ def data_clean(corpus_path, clean_path):
             for line in lines:
                 if line != '\n':
                     char, label = line.strip().split()
-                    if label == 'I-MISC' or 'B-MISC':
-                        label = 'O'
-                    if label == 'B-PERSON':
-                        label = 'B-RER'
-                    if label == 'I-PERSON':
-                        label = 'I-RER'
-                    if label == 'B-GPE':
+                    if label == 'B-PER.NAM' or label == 'B-PER.NOM':
+                        label = 'B-PER'
+                    if label == 'I-PER.NAM' or label == 'I-PER.NOM':
+                        label = 'I-PER'
+                    if label == 'B-ORG.NAM' or label == 'B-ORG.NOM':
+                        label = 'B-ORG'
+                    if label == 'I-ORG.NAM' or label == 'I-ORG.NOM':
+                        label = 'I-ORG'
+                    if label == 'B-LOC.NAM' or label == 'B-LOC.NOM' or label == 'B-GPE.NAM':
                         label = 'B-LOC'
-                    if label == 'I-GPE':
+                    if label == 'I-LOC.NAM' or label == 'I-LOC.NOM' or label == 'I-GPE.NAM':
                         label = 'I-LOC'
                     fwn.write(char + ' ' + label + '\n')
                 else:
                     fwn.write("\n")
-
-
-
     '''
     per1 = 0
     per2 = 0
@@ -57,7 +56,6 @@ def data_clean(corpus_path, clean_path):
     org3 = 0
     sentence_count = 0
     with open(corpus_path, encoding='utf-8') as fr:
-        lines的形状为['北\tB-LOC\n','京\tI-LOC\n','的\tO\n','...']
         lines = fr.readlines()
     for line in lines:
         if line.find("B-PER.NOM") > -1:
@@ -76,47 +74,6 @@ def data_clean(corpus_path, clean_path):
             org3 = org3 + 1
         if line == '\n':
             sentence_count = sentence_count + 1
-    for line in lines:
-        if line.find("B-PERSON") > -1:
-            per = per + 1
-        if line.find("B-LOC") > -1:
-            loc = loc + 1
-        if line.find("B-GPE") > -1:
-            gpe = gpe + 1
-        if line.find("B-ORG") > -1:
-            org = org + 1
-        if line.find("B-MISC") > -1:
-            o = o + 1
-        if line == '\n':
-            sentence_count = sentence_count + 1
-    for line in lines:
-        if line.find("B-PER") > -1:
-            per = per + 1
-        if line.find("B-LOC") > -1:
-            loc = loc + 1
-        if line.find("B-GPE") > -1:
-            gpe = gpe + 1
-        if line.find("B-ORG") > -1:
-            org = org + 1
-        if line.find("O") > -1:
-            o = o + 1
-        if line == '\n':
-            sentence_count = sentence_count + 1
-
-    for line in lines:
-        if line.find("B-PER") > -1:
-            per = per + 1
-        if line.find("B-LOC") > -1:
-            loc = loc + 1
-        if line.find("B-ORG") > -1:
-            org = org + 1
-        if line.find("O") > -1:
-            o = o + 1
-        if line == '\n':
-            sentence_count = sentence_count + 1
-        #line.replace('O', 'B-MISC')
-        #x = line
-        #line.replace("B-person", "B-PER")
     return per1, per2, loc1, loc2, org1, org2, org3, sentence_count
     '''
 
@@ -230,7 +187,7 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
-data_clean('data/rm_train_data.txt', 'data/rm_clean_train.txt')
+data_clean('data/weibo_dev.txt', 'data/weibo_clean_dev.txt')
 if __name__ == '__main__':
     params = cf.ConfigProcess('process', 'config/params.conf')
     params.load_config()
