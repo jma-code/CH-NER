@@ -116,13 +116,71 @@ def test_item(test_path, tag_label):
         return data, num_tag
 
 
+def comput_eval(paddle_path, test_path):
+    tag_label = 'LOC'
+    paddle_data, num_loc_paddle = paddle_item(paddle_path, tag_label)
+    test_data, num_loc_test = test_item(test_path, tag_label)
+    correct_loc_num = 0
+    for i in range(len(test_data)):
+        if test_data[i] != 'None':
+            for j in range(len(test_data[i])):
+                for k in range(len(paddle_data[i])):
+                    if test_data[i][j] == paddle_data[i][k]:
+                        correct_loc_num += 1
+                        break
+    print('LOC正确识别的实体数：', correct_loc_num)
+    print('LOC总的识别实体数：', num_loc_paddle)
+    print('LOC的正确率accurary:', float(correct_loc_num) / float(num_loc_paddle))
+    print('LOC的召回率recall：', float(correct_loc_num) / float(num_loc_test))
+    med_add = (float(correct_loc_num) / float(num_loc_paddle)) + (float(correct_loc_num) / float(num_loc_test))
+    f_loc = 2 * float(correct_loc_num) / float(num_loc_test) * float(correct_loc_num) / float(num_loc_paddle)/med_add
+    print('LOC的F测度值：', f_loc)
+
+    tag_label = 'PER'
+    paddle_data, num_per_paddle = paddle_item(paddle_path, tag_label)
+    test_data, num_per_test = test_item(test_path, tag_label)
+    correct_per_num = 0
+    for i in range(len(test_data)):
+        if test_data[i] != 'None':
+            for j in range(len(test_data[i])):
+                for k in range(len(paddle_data[i])):
+                    if test_data[i][j] == paddle_data[i][k]:
+                        correct_per_num += 1
+                        break
+    print('PER正确识别的实体数：', correct_per_num)
+    print('PER总的识别实体数：', num_per_paddle)
+    print('PER的正确率accurary:', float(correct_per_num) / float(num_per_paddle))
+    med_add = (float(correct_per_num) / float(num_per_paddle)) + (float(correct_per_num) / float(num_per_test))
+    f_per = 2 * float(correct_per_num) / float(num_per_test) * float(correct_per_num) / float(num_per_paddle) / med_add
+    print('PER的F测度值：', f_per)
+
+    tag_label = 'ORG'
+    paddle_data, num_org_paddle = paddle_item(paddle_path, tag_label)
+    test_data, num_org_test = test_item(test_path, tag_label)
+    correct_org_num = 0
+    for i in range(len(test_data)):
+        if test_data[i] != 'None':
+            for j in range(len(test_data[i])):
+                for k in range(len(paddle_data[i])):
+                    if test_data[i][j] == paddle_data[i][k]:
+                        correct_org_num += 1
+                        break
+    print('ORG正确识别的实体数：', correct_org_num)
+    print('ORG总的识别实体数：', num_org_paddle)
+    print('ORG的正确率accurary:', float(correct_org_num) / float(num_org_paddle))
+    med_add = (float(correct_org_num) / float(num_org_paddle)) + (float(correct_org_num) / float(num_org_test))
+    f_org = 2 * float(correct_org_num) / float(num_org_test) * float(correct_org_num) / float(num_org_paddle) / med_add
+    print('ORG的F测度值：', f_org)
+
+    total_item_paddle = num_loc_paddle + num_org_paddle + num_per_paddle
+    total_item_test = num_loc_test + num_org_test + num_per_test
+    print('总的识别实体数：', total_item_paddle)
+    print('总的实体数量：',total_item_test)
+
 
 if __name__ == '__main__':
-    tag_label = 'LOC'
-    paddle_data, num_paddle = paddle_item('lac_data.txt', tag_label)
-    test_data, num_test = test_item('test_data', tag_label)
-    print(paddle_data)
-    print(num_paddle)
-    print(test_data)
-    print(num_test)
+
+    comput_eval('lac_data.txt', 'test_data')
+
+
 
