@@ -59,6 +59,7 @@ def paddle_item(paddle_path, tag_label):
             paddle_item.append(re.findall(p1, line))
 
         per_items = []
+        num_tag = 0  # 统计tag_label总的实体数
         for items in paddle_item:
             if len(items[0]) == 0:
                 # 单独识别括号），则实体里边为空
@@ -72,8 +73,9 @@ def paddle_item(paddle_path, tag_label):
             if len(per_item) == 0:
                 per_items.append('None')
             else:
+                num_tag += len(per_item)
                 per_items.append(per_item)
-        return per_items
+        return per_items, num_tag
 
 
 def test_item(test_path, tag_label):
@@ -88,14 +90,14 @@ def test_item(test_path, tag_label):
         item = ''
         data = []
         sent_data = []
+        flag = 0
+        num_tag = 0
         for line in lines:
             if line != '\n':
-                flag = 0
                 char, tag = line.strip().split()
                 if tag == 'B-' + tag_label:
                     if flag == 1:
                         sent_data.append(item)
-                        item = ''
                     item = char
                     flag = 1
                 elif tag == 'I-' + tag_label:
@@ -107,27 +109,20 @@ def test_item(test_path, tag_label):
             else:
                 if len(sent_data) != 0:
                     data.append(sent_data)
+                    num_tag += len(sent_data)
                 else:
                     data.append('None')
                 sent_data = []
-        return data
+        return data, num_tag
 
 
 
 if __name__ == '__main__':
     tag_label = 'LOC'
-    paddle_data = paddle_item('lac_data.txt', tag_label)
-    test_data = test_item('test_data', tag_label)
+    paddle_data, num_paddle = paddle_item('lac_data.txt', tag_label)
+    test_data, num_test = test_item('test_data', tag_label)
     print(paddle_data)
+    print(num_paddle)
     print(test_data)
-    num = 0
-    for items in paddle_data:
-        if items != 'None':
-            num += 1
-    print('paddle识别出的实体数量：', num)
-    num = 0
-    for items in test_data:
-        if items != 'None':
-            num += 1
-    print('总的实体数量：', num)
-    print(len(paddle_data), len(test_data))
+    print(num_test)
+
