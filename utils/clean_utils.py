@@ -23,6 +23,7 @@ class Clean(object):
 class Clean_64_Corpus(Clean):
 
     def __init__(self, corpus_path, corpus_64_path, paddle_input_tsv_path, paddle_output_path, corpus_after_clean_path):
+
         self.corpus_path = corpus_path   # 原始数据集路径
         self.corpus_64_path = corpus_64_path  # 处理成64字的短句子
         self.paddle_input_tsv_path = paddle_input_tsv_path  # 处理为paddle可以预测的格式tsv
