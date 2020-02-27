@@ -2,8 +2,10 @@ import re
 
 
 class Clean(object):
-    def __init__(self):
-        pass
+    def __init__(self, corpus_path, paddle_output_path, corpus_after_clean_path):
+        self.corpus_path = corpus_path
+        self.paddle_output_path = paddle_output_path
+        self.corpus_after_clean_path = corpus_after_clean_path
 
     def cut_corpus(self):
         pass
@@ -19,8 +21,8 @@ class Clean(object):
 
 
 class Clean_64_Corpus(Clean):
+
     def __init__(self, corpus_path, corpus_64_path, paddle_input_tsv_path, paddle_output_path, corpus_after_clean_path):
-        super().__init__()
         self.corpus_path = corpus_path   # 原始数据集路径
         self.corpus_64_path = corpus_64_path  # 处理成64字的短句子
         self.paddle_input_tsv_path = paddle_input_tsv_path  # 处理为paddle可以预测的格式tsv
@@ -326,32 +328,32 @@ class Clean_64_Corpus(Clean):
 
 
 class Clean_Punc_Corpus(Clean):
-    # 原始数据集路径
-    data_path = ''
-    # 清洗后带标签的原始数据集路径
-    data_with_label_path = ''
-    # 清洗后不带标签的原始数据集路径
-    data_without_label_path = ''
-    # 百度lac标注的数据集路径
-    paddle_data_path = ''
-    # 百度lac数据集处理后保存的路径
-    paddle_data_path_save = ''
-    # 规则匹配后原始数据集的路径
-    data_path_save = ''
-    # 标签
-    tag_labels = ''
-    # 转换成按字标注后数据集存储路径
-    data_label_word = ''
 
-    def _init_(self):
-        pass
+    def _init_(self, corpus_path, corpus_with_label_path, corpus_without_label_path, paddle_output_path, paddle_data_path_save, data_path_save, tag_labels, corpus_after_clean_path):
+        # 原始数据集路径
+        self.corpus_path = corpus_path
+        # 清洗后带标签的原始数据集路径
+        self.corpus_with_label_path = corpus_with_label_path
+        # 清洗后不带标签的原始数据集路径
+        self.corpus_without_label_path = corpus_without_label_path
+        # 百度lac标注的数据集路径
+        self.paddle_output_path = paddle_output_path
+        # 百度lac数据集处理后保存的路径
+        self.paddle_data_path_save = paddle_data_path_save
+        # 规则匹配后原始数据集的路径
+        self.data_path_save = data_path_save
+        # 标签
+        self.tag_labels = tag_labels
+        # 转换成按字标注后数据集存储路径
+        self.corpus_after_clean_path = corpus_after_clean_path
+
 
     def cut_corpus(self):
         char = ''
         tag = ''
         sents = []
         tags = []
-        with open(self.data_path, encoding='utf-8')as f:
+        with open(self.corpus_path, encoding='utf-8')as f:
             lines = f.readlines()
             for line in lines:
                 if line != '\n':
@@ -372,14 +374,14 @@ class Clean_Punc_Corpus(Clean):
                     char = ''
                     tag = ''
 
-        with open(self.data_with_label_path, 'w', encoding='utf-8') as fw:
+        with open(self.corpus_with_label_path, 'w', encoding='utf-8') as fw:
             for sent, label in zip(sents, tags):
                 # 判断是否为空
                 if sent != '':
                     fw.write(sent + '|' + label + '\n')
         fw.close()
 
-        with open(self.data_without_label_path, 'w', encoding='utf-8') as fwn:
+        with open(self.corpus_without_label_path, 'w', encoding='utf-8') as fwn:
             for sent in sents:
                 # 判断是否为空
                 if sent != '':
@@ -393,7 +395,7 @@ class Clean_Punc_Corpus(Clean):
         paddle_char = []
         # 存储每行标签
         paddle_label = []
-        with open(self.paddle_data_path, encoding='utf-8')as f:
+        with open(self.paddle_output_path, encoding='utf-8')as f:
             lines = f.readlines()
             for line in lines:
                 sent = ''
@@ -441,7 +443,7 @@ class Clean_Punc_Corpus(Clean):
         t = 0
         labels = ['B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC', 'O']
         with open(self.paddle_data_path_save, encoding='utf-8') as f:
-            with open(self.data_with_label_path, encoding='utf-8') as fr:
+            with open(self.corpus_with_label_path, encoding='utf-8') as fr:
                 lines_p = f.readlines()
                 lines_t = fr.readlines()
                 for line_p, line_t in zip(lines_p, lines_t):
@@ -554,7 +556,7 @@ class Clean_Punc_Corpus(Clean):
                     tags.append(data[0][i])
 
         #按字写入
-        with open(self.data_label_word, 'w', encoding='utf-8') as fw:
+        with open(self.corpus_after_clean_path, 'w', encoding='utf-8') as fw:
             for word, tag in zip(words, tags):
                 fw.write(word + ' ' + tag + '\n')
                 if word in ['。', '！']:
