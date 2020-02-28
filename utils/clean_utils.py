@@ -359,7 +359,7 @@ class Clean_Punc_Corpus(Clean):
                 if line != '\n':
                     char_, tag_ = line.strip().split()
                     # 去除括号
-                    if char_ not in ['（', '）']:
+                    if char_ not in ['（', '）', '(', ')']:
                         char += char_
                         tag = tag + tag_ + ' '
                     # 判断是否为标点符号
