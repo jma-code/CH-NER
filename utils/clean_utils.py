@@ -473,6 +473,9 @@ class Clean_Punc_Corpus(Clean):
                             tag = tag + labels[4] + ' '
                         elif data_p[0][i] == labels[5] and data_t[0][i] in [labels[1], labels[3]]:
                             tag = tag + labels[5] + ' '
+                        elif data_p[0][i] == labels[6] and data_t[0][i] == labels[0] and i < (len(data_p[0]) - 1) and \
+                                data_t[0][i + 1] == 'O':
+                            tag = tag + labels[6] + ' '
                         else:
                             tag = tag + data_t[0][i] + ' '
                     label_t.append(tag)
