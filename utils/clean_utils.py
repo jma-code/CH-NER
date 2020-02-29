@@ -561,7 +561,7 @@ class Clean_Punc_Corpus(Clean):
         #按字写入
         with open(self.corpus_after_clean_path, 'w', encoding='utf-8') as fw:
             for word, tag in zip(words, tags):
-                fw.write(word + ' ' + tag + '\n')
+                fw.write(word + '\t' + tag + '\n')
                 if word in ['。', '！', '.', '?']:
                     fw.write('\n')
         fw.close()
