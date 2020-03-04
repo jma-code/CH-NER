@@ -198,7 +198,7 @@ def run(operation):
         train(train_data, test_data)
 
     if operation == 'test':
-        chk_file = tf.train.latest_checkpoint(params.result_path)
+        chk_file = tf.train.latest_checkpoint(params.store_path)
         test_data = read_corpus(args.test_data)
         test(test_data, chk_file)
 
