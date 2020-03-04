@@ -49,6 +49,10 @@ python3 main.py --mode=test
 python3 main.py --mode=predict
 ```
 
+## result
+下图是测试集在本项目模型和百度LAC模型中的测试效果对比，其中数据集按照8：1：1划分为训练集、测试集、验证集。
+![Image text](https://github.com/jma-code/NER/blob/master/image_store/result.png)
+
 ## 相关文献
 + [Bidirectional LSTM-CRF Models for Sequence Tagging](https://arxiv.org/pdf/1508.01991v1.pdf)
 + [Neural Architectures for Named Entity Recognition](https://www.aclweb.org/anthology/N16-1030/)
