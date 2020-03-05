@@ -149,7 +149,7 @@ def get_ORG_entity(tag_seq, char_seq):
     return ORG
 
 
-def predict(model, batch_size, vocab, tag2label, shuffle=False):
+def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
     """
     Created by jty
     预测模块总函数。
@@ -164,11 +164,11 @@ def predict(model, batch_size, vocab, tag2label, shuffle=False):
     print(ckpt_file)
     saver = tf.train.Saver()
     with tf.Session(config=config) as sess:
-        print('============= demo =============')
+        #print('============= demo =============')
         saver.restore(sess, ckpt_file)
         while 1:
-            print('Please input your sentence:')
-            demo_sent = input()
+            #print('Please input your sentence:')
+            #demo_sent = input()
             if demo_sent == '' or demo_sent.isspace():
                 print('See you next time!')
                 break
@@ -177,10 +177,11 @@ def predict(model, batch_size, vocab, tag2label, shuffle=False):
                 demo_data = [(demo_sent, ['O'] * len(demo_sent))]
                 tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
                 PER, LOC, ORG = get_entity(tag, demo_sent)
-                print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
+                return PER, LOC, ORG
+                #print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 
-def run():
+def run(demo_sent):
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
@@ -189,4 +190,4 @@ def run():
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-    predict(model, params.batch_size, read_dictionary(params.vocab_path), params.tag2label)
+    predict(model, params.batch_size, read_dictionary(params.vocab_path), demo_sent, params.tag2label)
