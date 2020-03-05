@@ -18,8 +18,9 @@ parser.add_argument('--mode', type=str, default='predict', help='train/test/pred
 args = parser.parse_args()
 
 if args.mode == 'predict':
-    predict.run()
-
+    #predict.run()
+    PER, LOC, ORG = predict.run('我在北京上北京大学', True)
+    print(PER, LOC, ORG)
 else:
     train.run(args.mode)
 
