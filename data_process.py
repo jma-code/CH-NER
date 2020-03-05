@@ -187,7 +187,7 @@ def random_embedding(vocab, embedding_dim):
     return embedding_mat
 
 
-data_clean('data/weibo_dev.txt', 'data/weibo_clean_dev.txt')
+#data_clean('data/weibo_dev.txt', 'data/weibo_clean_dev.txt')
 if __name__ == '__main__':
     params = cf.ConfigProcess('process', 'config/params.conf')
     params.load_config()
