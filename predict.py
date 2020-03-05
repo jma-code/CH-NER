@@ -7,7 +7,6 @@ from utils import train_utils
 from data_process import read_dictionary
 import utils.config as cf
 
-
 # 参数部分
 params = cf.ConfigPredict('predict', 'config/params.conf')
 params.load_config()
@@ -164,24 +163,23 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
     print(ckpt_file)
     saver = tf.train.Saver()
     with tf.Session(config=config) as sess:
-        #print('============= demo =============')
+        # print('============= demo =============')
         saver.restore(sess, ckpt_file)
-        while 1:
-            #print('Please input your sentence:')
-            #demo_sent = input()
-            if demo_sent == '' or demo_sent.isspace():
-                print('See you next time!')
-                break
-            else:
-                demo_sent = list(demo_sent.strip())
-                demo_data = [(demo_sent, ['O'] * len(demo_sent))]
-                tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
-                PER, LOC, ORG = get_entity(tag, demo_sent)
-                return PER, LOC, ORG
-                #print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
+        print('Please input your sentence:')
+        # demo_sent = input()
+        #demo_sent = '我在北京上北京大学'
+        if demo_sent == '' or demo_sent.isspace():
+            print('See you next time!')
+        else:
+            demo_sent = list(demo_sent.strip())
+            demo_data = [(demo_sent, ['O'] * len(demo_sent))]
+            tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
+            PER, LOC, ORG = get_entity(tag, demo_sent)
+            return PER, LOC, ORG
+            #print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
 
-def run(demo_sent):
+def run(demo_sent, flag=False):
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
     embeddings = embedding_mat
@@ -190,4 +188,8 @@ def run(demo_sent):
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-    predict(model, params.batch_size, read_dictionary(params.vocab_path), demo_sent, params.tag2label)
+    PER, LOC, ORG = predict(model, params.batch_size, read_dictionary(params.vocab_path), params.tag2label, demo_sent)
+    if flag:
+        return PER, LOC, ORG
+
+#run('我在北京上北京大学')
