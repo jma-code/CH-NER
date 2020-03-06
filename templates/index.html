@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+    <title>CH_NER</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/predict.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <h1>CH_NER</h1>
+    <div class="col-md-6">
+        <p>在线命名实体识别</p>
+        <textarea id="input" rows="5" cols="100" placeholder="输入中文句子"></textarea>
+        <button id="predict" class="btn btn-default" onclick="predict()">提交</button>
+        <button id="clear" class="btn btn-default" onclick="clean()">清除</button>
+    </div>
+
+</div>
+<div class="container">
+    <div class="col-md-6">
+        <textarea id="output" rows="5" cols="100" placeholder="输出中文实体"></textarea>
+    </div>
+</div>
+</body>
+</html>
+
+
