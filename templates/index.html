@@ -6,21 +6,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/predict.js') }}"></script>
+    <style type="text/css">
+        body{
+            background-image: url("../static/pictures/bk.jpg");
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1>CH_NER</h1>
-    <div class="col-md-6">
-        <p>在线命名实体识别</p>
-        <textarea id="input" rows="5" cols="100" placeholder="输入中文句子"></textarea>
-        <button id="predict" class="btn btn-default" onclick="predict()">提交</button>
-        <button id="clear" class="btn btn-default" onclick="clean()">清除</button>
+    <div class="text-center mt-5" >
+        <h1 style="color:black">CH_NER</h1>
+        <p style="color:black ">在线命名实体识别</p>
+        <textarea style="border-style:none;opacity: 0.6;" id="input" rows="8" cols="115" placeholder="输入中文句子"></textarea>
     </div>
 
 </div>
+<div class="container col-md-8" >
+    <div class="text-right">
+        <button id="predict" class="btn btn-lg p-2 m-2" onclick="predict()" >提交</button>
+        <button id="clear" class="btn btn-lg p-2 m-2" onclick="clean()">清除</button>
+    </div>
+</div>
 <div class="container">
-    <div class="col-md-6">
-        <textarea id="output" rows="5" cols="100" placeholder="输出中文实体"></textarea>
+    <div class="text-center">
+        <textarea style="border-style:none;opacity: 0.6" id="output" rows="8" cols="115" placeholder="输出中文实体"></textarea>
     </div>
 </div>
 </body>
