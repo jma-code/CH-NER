@@ -94,6 +94,7 @@ def get_PER_entity(tag_seq, char_seq):
                 PER.append(per)
         if tag not in ['I-PER', 'B-PER']:
             if 'per' in locals().keys():
+                per=per.strip()
                 PER.append(per)
                 del per
             continue
@@ -118,6 +119,7 @@ def get_LOC_entity(tag_seq, char_seq):
                 LOC.append(loc)
         if tag not in ['I-LOC', 'B-LOC']:
             if 'loc' in locals().keys():
+                loc = loc.strip()
                 LOC.append(loc)
                 del loc
             continue
@@ -142,6 +144,7 @@ def get_ORG_entity(tag_seq, char_seq):
                 ORG.append(org)
         if tag not in ['I-ORG', 'B-ORG']:
             if 'org' in locals().keys():
+                org = org.strip()
                 ORG.append(org)
                 del org
             continue
@@ -165,12 +168,13 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
     with tf.Session(config=config) as sess:
         # print('============= demo =============')
         saver.restore(sess, ckpt_file)
-        print('Please input your sentence:')
+        # print('Please input your sentence:')
         # demo_sent = input()
         #demo_sent = '我在北京上北京大学'
         if demo_sent == '' or demo_sent.isspace():
             print('See you next time!')
         else:
+            # demo_sent.replace('\n', '')
             demo_sent = list(demo_sent.strip())
             demo_data = [(demo_sent, ['O'] * len(demo_sent))]
             tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
@@ -192,4 +196,4 @@ def run(demo_sent, flag=False):
     if flag:
         return PER, LOC, ORG
 
-#run('我在北京上北京大学')
+# run('我在北京上北京大学')
