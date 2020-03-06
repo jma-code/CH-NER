@@ -165,7 +165,7 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
     with tf.Session(config=config) as sess:
         # print('============= demo =============')
         saver.restore(sess, ckpt_file)
-        print('Please input your sentence:')
+        #print('Please input your sentence:')
         # demo_sent = input()
         #demo_sent = '我在北京上北京大学'
         if demo_sent == '' or demo_sent.isspace():
@@ -175,6 +175,7 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
             demo_data = [(demo_sent, ['O'] * len(demo_sent))]
             tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
             PER, LOC, ORG = get_entity(tag, demo_sent)
+            print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
             return PER, LOC, ORG
             #print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
 
