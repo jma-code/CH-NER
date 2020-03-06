@@ -17,15 +17,7 @@ app = Flask(__name__)
 @app.route('/predict', methods=['post'])
 def pred():
     PER, LOC, ORG = predict.run(request.json, True)
-    str_per, str_loc, str_org = 'PER: ', 'LOC: ', 'ORG: '
-    for item in PER:
-        str_per += item + '、'
-    for item in LOC:
-        str_loc += item + '、'
-    for item in ORG:
-        str_org += item + '、'
-    # print(str_per)
-    return str_per + '\n' + str_loc + '\n' + str_org
+    return jsonify({'PER': PER, 'LOC': LOC, 'ORG': ORG})
 
 
 @app.route('/')
@@ -35,4 +27,5 @@ def main():
 
 if __name__ == '__main__':
     app.debug = True
+    app.config['JSON_AS_ASCII'] = False
     app.run()
