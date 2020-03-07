@@ -27,6 +27,5 @@ function predict(){
 }
 
 function clean(){
-    alert('delete')
     window.location.reload(true)
 }
