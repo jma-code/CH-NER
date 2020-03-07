@@ -89,15 +89,21 @@ def get_PER_entity(tag_seq, char_seq):
             per = char
             if i + 1 == length:
                 per = per.strip()
+                per.replace('\n', '')
+                per.replace('\r', '')
                 PER.append(per)
         if tag == 'I-PER':
             per += char
             if i + 1 == length:
                 per = per.strip()
+                per.replace('\n', '')
+                per.replace('\r', '')
                 PER.append(per)
         if tag not in ['I-PER', 'B-PER']:
             if 'per' in locals().keys():
                 per=per.strip()
+                per.replace('\n', '')
+                per.replace('\r', '')
                 PER.append(per)
                 del per
             continue
@@ -116,15 +122,21 @@ def get_LOC_entity(tag_seq, char_seq):
             loc = char
             if i + 1 == length:
                 loc = loc.strip()
+                loc.replace('\n', '')
+                loc.replace('\r', '')
                 LOC.append(loc)
         if tag == 'I-LOC':
             loc += char
             if i + 1 == length:
                 loc = loc.strip()
+                loc.replace('\n', '')
+                loc.replace('\r', '')
                 LOC.append(loc)
         if tag not in ['I-LOC', 'B-LOC']:
             if 'loc' in locals().keys():
                 loc = loc.strip()
+                loc.replace('\n', '')
+                loc.replace('\r', '')
                 LOC.append(loc)
                 del loc
             continue
@@ -143,15 +155,21 @@ def get_ORG_entity(tag_seq, char_seq):
             org = char
             if i + 1 == length:
                 org = org.strip()
+                org = org.replace('\n', '')
+                org = org.replace('\r', '')
                 ORG.append(org)
         if tag == 'I-ORG':
             org += char
             if i + 1 == length:
                 org = org.strip()
+                org = org.replace('\n', '')
+                org = org.replace('\r', '')
                 ORG.append(org)
         if tag not in ['I-ORG', 'B-ORG']:
             if 'org' in locals().keys():
                 org = org.strip()
+                org = org.replace('\n', '')
+                org = org.replace('\r', '')
                 ORG.append(org)
                 del org
             continue
@@ -186,7 +204,6 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
             demo_data = [(demo_sent, ['O'] * len(demo_sent))]
             tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
             PER, LOC, ORG = get_entity(tag, demo_sent)
-            print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
             return PER, LOC, ORG
 
 
