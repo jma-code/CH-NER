@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.crf import viterbi_decode
+import re
 
 from model import BiLSTM_CRF
 from utils import train_utils
@@ -87,10 +88,12 @@ def get_PER_entity(tag_seq, char_seq):
                 del per
             per = char
             if i + 1 == length:
+                per = per.strip()
                 PER.append(per)
         if tag == 'I-PER':
             per += char
             if i + 1 == length:
+                per = per.strip()
                 PER.append(per)
         if tag not in ['I-PER', 'B-PER']:
             if 'per' in locals().keys():
@@ -112,10 +115,12 @@ def get_LOC_entity(tag_seq, char_seq):
                 del loc
             loc = char
             if i + 1 == length:
+                loc = loc.strip()
                 LOC.append(loc)
         if tag == 'I-LOC':
             loc += char
             if i + 1 == length:
+                loc = loc.strip()
                 LOC.append(loc)
         if tag not in ['I-LOC', 'B-LOC']:
             if 'loc' in locals().keys():
@@ -137,10 +142,12 @@ def get_ORG_entity(tag_seq, char_seq):
                 del org
             org = char
             if i + 1 == length:
+                org = org.strip()
                 ORG.append(org)
         if tag == 'I-ORG':
             org += char
             if i + 1 == length:
+                org = org.strip()
                 ORG.append(org)
         if tag not in ['I-ORG', 'B-ORG']:
             if 'org' in locals().keys():
@@ -179,8 +186,9 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
             demo_data = [(demo_sent, ['O'] * len(demo_sent))]
             tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
             PER, LOC, ORG = get_entity(tag, demo_sent)
+            print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
             return PER, LOC, ORG
-            #print('PER: {}\nLOC: {}\nORG: {}'.format(PER, LOC, ORG))
+
 
 
 def run(demo_sent, flag=False):
