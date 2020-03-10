@@ -19,8 +19,8 @@ args = parser.parse_args()
 
 if args.mode == 'predict':
     #predict.run()
-    PER, LOC, ORG = predict.run('我在北京上北京大学', True)
-    print(PER, LOC, ORG)
+    PER_mess, LOC_mess, ORG_mess = predict.run('我在北京上北京大学,周恩来是中国总理,我喜欢北京。我在清华大学，毛泽东是中国主席，他去过苏联。', True)
+    print(PER_mess, LOC_mess, ORG_mess)
 else:
     train.run(args.mode)
 
