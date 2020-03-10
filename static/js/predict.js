@@ -1,3 +1,8 @@
+
+var data_per = [];
+var data_loc = [];
+var data_org = [];
+
 function predict(){
     sentence = document.getElementById('input').value;
 
@@ -8,24 +13,23 @@ function predict(){
                 data: JSON.stringify(sentence),
                 success: (data) => {
                     eval('var item=' + data)
-                    var str_per = 'PER: '
-                    var str_loc = 'LOC: '
-                    var str_org = 'ORG: '
                     for(var i=0; i<item.PER.length; i++){
-                        str_per = str_per + item.PER[i] + ' '
+                        data_per[i] = item.PER[i];
                     }
                     for(var i=0; i<item.LOC.length; i++){
-                        str_loc = str_loc + item.LOC[i] + ' '
+                        data_loc[i] = item.LOC[i];
                     }
                     for(var i=0; i<item.ORG.length; i++){
-                        str_org = str_org + item.ORG[i] + ' '
+                        data_org[i] = item.ORG[i];
                     }
+//                    console.log(data_per);
+//                    console.log(data_loc);
+//                    console.log(data_org);
 
-                    $('#output').text(str_per + '\n' + str_loc + '\n' + str_org);
                     }
     });
 }
 
 function clean(){
-    window.location.reload(true)
+    window.location.reload(true);
 }

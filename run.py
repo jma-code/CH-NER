@@ -16,8 +16,16 @@ app = Flask(__name__)
 
 @app.route('/predict', methods=['post'])
 def pred():
-    PER, LOC, ORG = predict.run(request.json, True)
-    return jsonify({'PER': PER, 'LOC': LOC, 'ORG': ORG})
+    PER_mess, LOC_mess, ORG_mess = predict.run(request.json, True)
+    PER_result, LOC_result, ORG_result = [], [], []
+    for p in PER_mess.values():
+        PER_result.append(p)
+    for l in LOC_mess.values():
+        LOC_result.append(l)
+    for o in ORG_mess.values():
+        ORG_result.append(o)
+
+    return jsonify({'PER': PER_result, 'LOC': LOC_result, 'ORG': ORG_result})
 
 
 @app.route('/')
