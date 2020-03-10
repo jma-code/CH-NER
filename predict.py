@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.crf import viterbi_decode
+from copy import deepcopy
 import re
 
 from model import BiLSTM_CRF
@@ -187,6 +188,8 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
     :param vocab: word2id
     :param shuffle: 默认为False
     """
+    s_id = 1
+    sent_id = {}
     ckpt_file = tf.train.latest_checkpoint(params.model_path)
     print(ckpt_file)
     saver = tf.train.Saver()
@@ -199,15 +202,64 @@ def predict(model, batch_size, vocab, tag2label, demo_sent, shuffle=False):
         if demo_sent == '' or demo_sent.isspace():
             print('See you next time!')
         else:
-            # demo_sent.replace('\n', '')
+            # 打上id标签
+            for word in demo_sent:
+                sent_id[s_id] = word
+                s_id += 1
             demo_sent = list(demo_sent.strip())
             demo_data = [(demo_sent, ['O'] * len(demo_sent))]
             tag = demo_one(model, sess, demo_data, batch_size, vocab, shuffle, tag2label)
             PER, LOC, ORG = get_entity(tag, demo_sent)
-            return PER, LOC, ORG
-
-
-
+            PER_local = {}
+            LOC_local = {}
+            ORG_local = {}
+            p_id = 1
+            l_id = 1
+            o_id = 1
+            PER_mess = {}
+            LOC_mess = {}
+            ORG_mess = {}
+            # 抽取PER实体长度、位置信息
+            i = 1
+            for word in PER:
+                PER_local['item'] = word
+                PER_local['tag'] = 'PER'
+                PER_local['length'] = len(word)
+                for j in range(i, len(sent_id)):
+                    if word[0] == sent_id[j]:
+                        PER_local['offset'] = j
+                        i = j + len(word)
+                        break
+                PER_mess[p_id] = deepcopy(PER_local)
+                p_id += 1
+            # 抽取LOC实体长度、位置信息
+            i = 1
+            for word in LOC:
+                LOC_local['item'] = word
+                LOC_local['tag'] = 'LOC'
+                LOC_local['length'] = len(word)
+                for j in range(i, len(sent_id)):
+                    if word[0] == sent_id[j]:
+                        LOC_local['offset'] = j
+                        i = j + len(word)
+                        break
+                LOC_mess[l_id] = deepcopy(LOC_local)
+                l_id += 1
+            # 抽取ORG实体长度、位置信息
+            i = 1
+            for word in ORG:
+                ORG_local['item'] = word
+                ORG_local['tag'] = 'ORG'
+                ORG_local['length'] = len(word)
+                for j in range(i, len(sent_id)):
+                    if word[0] == sent_id[j]:
+                        ORG_local['offset'] = j
+                        i = j + len(word)
+                        break
+                ORG_mess[o_id] = deepcopy(ORG_local)
+                o_id += 1
+            #print(PER_mess, LOC_mess, ORG_mess)
+            return PER_mess, LOC_mess, ORG_mess
 def run(demo_sent, flag=False):
     embedding_mat = np.random.uniform(-0.25, 0.25, (len(read_dictionary(params.vocab_path)), params.embedding_dim))
     embedding_mat = np.float32(embedding_mat)
@@ -217,8 +269,8 @@ def run(demo_sent, flag=False):
     model = BiLSTM_CRF(embeddings, params.update_embedding, params.hidden_dim, num_tags, params.clip, summary_path,
                        params.optimizer)
     model.build_graph()
-    PER, LOC, ORG = predict(model, params.batch_size, read_dictionary(params.vocab_path), params.tag2label, demo_sent)
+    PER_mess, LOC_mess, ORG_mess = predict(model, params.batch_size, read_dictionary(params.vocab_path), params.tag2label, demo_sent)
     if flag:
-        return PER, LOC, ORG
+        return PER_mess, LOC_mess, ORG_mess
 
-# run('我在北京上北京大学')
+#run('我在北京上北京大学,周恩来是中国总理,我喜欢北京。我在清华大学，毛泽东是中国主席，他去过苏联。')
