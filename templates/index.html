@@ -23,11 +23,17 @@
         window._version = 1581660136057;
     </script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <style type="text/css">
+        #title{
+            background-image: url("../static/pictures/bg.jpg");
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
-<div class="tech-section">
-    <div class="tech-catalog-title" >CH_NER</div>
-    <div class="tech-catalog-info">在线命名实体识别
+<div class="tech-section" id="title">
+    <div class="tech-catalog-title" style="color:white">CH_NER</div>
+    <div class="tech-catalog-info" style="color:white">在线命名实体识别
     </div>
 </div>
 <div>
@@ -42,7 +48,7 @@
             <div class="word-form">
                 <div class="com-text-cover">
                     <div class="mid-down-title"><span class="down-title-des">请输入一段想分析的文本：</span></div>
-                        <textarea style="border-style:none" spellcheck="false" maxlength="200" class="com-txt" rows="10" cols="166" id="input"></textarea>
+                        <textarea style="border-style:none;font-size: 16px;padding:20px" spellcheck="false" maxlength="200" class="com-txt" rows="7" cols="141" id="input"></textarea>
                     <div id="contentwordage"></div>
                     <div class="ed-form-down"></div>
                 </div>
@@ -64,12 +70,16 @@
                         <div class="mes-analyse">词汇详情</div>
                         <div class="mes-des-cover">
                             <div class="mes-type">
-                                位置：
-                                <span class="mes-type-in" id="position"></span>
+                                实体：
+                                <span class="mes-type-in" id="word"></span>
                             </div>
                             <div class="mes-type mes-divide">
-                                词性：
+                                实体类别：
                                 <span class="mes-type-in" id="means"></span>
+                            </div>
+                            <div class="mes-type mes-divide">
+                                位置：
+                                <span class="mes-type-in" id="position"></span>
                             </div>
                             <div class="mes-type">
                                 长度：

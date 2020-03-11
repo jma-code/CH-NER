@@ -8,7 +8,7 @@ $(document).ready(function(){
     $('#contentwordage').html(pattern);
     $('#input').keyup(
         function(event){
-            if(event.keyCode=='32' || event.keyCode=='13'){
+            if(event.keyCode=='32' || event.keyCode=='13'|| event.keyCode=='8'){
             var remain = $(this).val().length;
             if(remain > 200){
                 pattern = '字数超过限制！';
@@ -91,14 +91,17 @@ function test(element){
     document.getElementById(result).className = "result-tips result-tips-show";
     if(flag=='per') {
         $("#position ").html(data_per[num].offset);
+        $("#word ").html(data_per[num].item);
         $("#means ").html(data_per[num].tag);
         $("#length ").html(data_per[num].length)
     }else if(flag=='loc'){
         $("#position ").html(data_loc[num].offset);
+        $("#word ").html(data_loc[num].item);
         $("#means ").html(data_loc[num].tag);
         $("#length ").html(data_loc[num].length)
     }else{
         $("#position ").html(data_org[num].offset);
+        $("#word ").html(data_org[num].item);
         $("#means ").html(data_org[num].tag);
         $("#length ").html(data_org[num].length)
     }
