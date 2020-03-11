@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CH_NER</title>
+    <title>CH-NER</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="shortcut icon" href="//aip.bdstatic.com/portal/dist/1581660136057/ai_images/favicon-32.ico">
     <link rel="stylesheet" href="//aip.bdstatic.com/portal/dist/1581660136057/css/base.style.css">
@@ -24,18 +24,26 @@
     </script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <style type="text/css">
-        #title{
+        #ai-content{
             background-image: url("../static/pictures/bg.jpg");
             background-size: cover;
         }
     </style>
 </head>
 <body>
-<div class="tech-section" id="title">
-    <div class="tech-catalog-title" style="color:white">CH_NER</div>
-    <div class="tech-catalog-info" style="color:white">在线命名实体识别
+<div class="tech-banner" id="ai-content">
+    <div class="tech-banner-shape"></div>
+    <div class="tech-banner-content">
+        <div class="tech-banner-title">
+            CH-NER
+        </div>
+        <div class="tech-banner-info">
+            在线命名实体识别
+        </div>
     </div>
+    <span class="tech-banner-box"></span>
 </div>
+
 <div>
     <div class="tech-catalog-title">功能介绍</div>
     <div class="tech-catalog-info">
@@ -105,7 +113,8 @@
                         <div class="tech-scene-title">语音指令解析
                         </div>
                         <div class="tech-scene-detail">
-                            以实体抽取为基础，分析语音命令中的关键名词、动词、数量、时间等，准确理解命令的含义，提高用户体验
+                            以实体抽取为基础，分析语音命令中的关键名词、数量、时间等，准确理解命令的含义，提高用户体验
+                            <br><br>
                         </div>
                         <hr class="tech-scene-line">
                     </div>
