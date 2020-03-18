@@ -203,6 +203,73 @@ class DataProcessor(object):
         lines.append(line)
       return lines
 
+class NERProcessor(DataProcessor):
+    def get_train_examples(self, data_dir):
+        fr = open(os.path.join(data_dir, 'train_text.txt'), encoding='utf-8')
+        fw_l = open(os.path.join(data_dir, 'train_label.txt'), encoding='utf-8')
+        res = []
+        lines = []
+        label = []
+        examples = []
+        for i in fr.readlines():
+            lines.append(i.strip())
+        for i in fw_l.readlines():
+            label.append(i.strip())
+        for i in range(len(lines)):
+            res.append([lines[i], label[i]])
+
+        for (i, line) in enumerate(res):
+            guid = "train-%d" % (i)
+            text = tokenization.convert_to_unicode(line[0])
+            label = tokenization.convert_to_unicode(line[1])
+            examples.append(InputExample(guid=guid, text_a=text, label=label))
+        return examples
+
+    def get_dev_examples(self, data_dir):
+        fr = open(os.path.join(data_dir, 'dev_text.txt'), encoding='utf-8')
+        fw_l = open(os.path.join(data_dir, 'dev_label.txt'), encoding='utf-8')
+        res = []
+        lines = []
+        label = []
+        examples = []
+        for i in fr.readlines():
+            lines.append(i.strip())
+        for i in fw_l.readlines():
+            label.append(i.strip())
+        for i in range(len(lines)):
+            res.append([lines[i], label[i]])
+
+        for (i, line) in enumerate(res):
+            guid = "dev-%d" % (i)
+            text = tokenization.convert_to_unicode(line[0])
+            label = tokenization.convert_to_unicode(line[1])
+            examples.append(InputExample(guid=guid, text_a=text, label=label))
+        return examples
+
+    def get_test_examples(self, data_dir):
+        fr = open(os.path.join(data_dir, 'test_text.txt'), encoding='utf-8')
+        # 只读取数据集不读取类别。
+        fw_l = open(os.path.join(data_dir, 'test_label.txt'), encoding='utf-8')
+        res = []
+        lines = []
+        label = []
+        examples = []
+        for i in fr.readlines():
+            lines.append(i.strip())
+        for i in fw_l.readlines():
+            label.append(i.strip())
+        for i in range(len(lines)):
+            res.append([lines[i], label[i]])
+
+        for (i, line) in enumerate(res):
+            guid = "test-%d" % (i)
+            text = tokenization.convert_to_unicode(line[0])
+            label = tokenization.convert_to_unicode(line[1])
+            examples.append(InputExample(guid=guid, text_a=text, label=label))
+        return examples
+
+    def get_labels(self):
+        return ["PAD", "B-LOC", "I-LOC", "B-ORG", "I-ORG", "B-PER", "I-PER", "O", "[CLS]", "[SEP]"]
 
 class XnliProcessor(DataProcessor):
   """Processor for the XNLI data set."""
