@@ -29,6 +29,7 @@ import tokenization
 import tf_metrics
 import tensorflow as tf
 from lstm_crf_layer import BLSTM_CRF
+from tensorflow.contrib.layers.python.layers import initializers
 import pickle
 
 flags = tf.flags
@@ -648,8 +649,9 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
             tokens_b.pop()
 
 
-def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
-                 labels, num_labels, use_one_hot_embeddings):
+def create_model(bert_config, is_training, input_ids, input_mask,
+                  segment_ids, labels, num_labels, use_one_hot_embeddings,
+                  dropout_rate=1.0, lstm_size=1, cell='lstm', num_layers=1):
     """Creates a classification model."""
     import tensorflow as tf
     model = modeling.BertModel(
