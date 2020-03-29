@@ -1,7 +1,8 @@
 # 使用BiLSTM+CRF实现中文命名实体识别
+![Image text](https://img.shields.io/badge/Version-v1.0.0-blue)
 ## 环境要求：
- - Python 3.6
- - TensorFlow >= 1.14.1
+![Image text](https://img.shields.io/badge/Python-3.6-green?style=flat)
+![Image text](https://img.shields.io/badge/Tensorflow->=1.14.1-green?style=flat)
 ## 模型
 该模型与文献[1]和[2]提供的模型相似。其结构如下图所示：
 ![Image text](https://github.com/jma-code/NER/blob/master/image_store/network.png)
